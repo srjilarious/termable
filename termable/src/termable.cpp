@@ -18,4 +18,28 @@ termableLinux::displaySize() const
     return sx;
 }
 
+void 
+termableLinux::moveUp(uint32_t amount) 
+{
+    printf("\u001b[%uA", amount);
+}
+
+void 
+termableLinux::moveDown(uint32_t amount) 
+{
+    printf("\u001b[%uB", amount);
+}
+
+void 
+termableLinux::moveLeft(uint32_t amount) 
+{
+    printf("\u001b[%uD", amount);
+}
+
+void 
+termableLinux::moveRight(uint32_t amount)
+{
+    printf("\u001b[%uC", amount);
+}
+
 }
