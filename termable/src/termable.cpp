@@ -6,6 +6,15 @@
 namespace termable
 {
 
+namespace color
+{
+
+std::string color256(uint8_t which) {
+    return std::string("\u001b[38;5;") + std::to_string(which) + "m";
+}
+
+}
+
 vec2i 
 termableLinux::displaySize() const
 {

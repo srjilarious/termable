@@ -11,6 +11,13 @@ int main(int argc, char** argv)
     auto sz = term.displaySize();
     printf("Terminal size = %d x %d\n", sz.x, sz.y);
 
+    for(int ii = 0; ii < 16; ii++) {
+        for(int jj = 0; jj < 16; jj++) {
+            printf("%s%s",  termable::color::color256(ii*16+jj).c_str(), u8"\u2589");
+        }
+        printf("%s\n", termable::color::ResetColor);
+    }
+
     std::this_thread::sleep_for(std::chrono::milliseconds(250));
     term.moveUp(3);
     printf("Moved up!");
