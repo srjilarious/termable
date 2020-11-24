@@ -37,4 +37,14 @@ int main(int argc, char** argv)
     term.moveRight(15);
     printf("Moved Right!");
     fflush(stdout);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    term.setCursorPos({0,0});
+    for(int jj = 0; jj < sz.x; jj++) printf(u8"\u2589");
+    printf("\n");
+    for(int yy = 0; yy < sz.y-2; yy++) {
+        printf("%s%s%s\n", u8"\u2589", std::string(sz.x-2, ' ').c_str(), u8"\u2589");
+    }
+    for(int jj = 0; jj < sz.x; jj++) printf(u8"\u2589");
+    printf("\n");
 }

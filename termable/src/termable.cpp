@@ -27,6 +27,13 @@ termableLinux::displaySize() const
     return sx;
 }
 
+void
+termableLinux::setCursorPos(vec2i pos)
+{
+    // +1 accounts for coords being 1-based rather than our 0, based coords.
+    printf("\u001b[%u;%uH", pos.x+1, pos.y+1);
+}
+
 void 
 termableLinux::moveUp(uint32_t amount) 
 {
