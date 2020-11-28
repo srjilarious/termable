@@ -40,6 +40,11 @@ struct vec2i {
     int x, y;
 };
 
+enum ClearType : uint8_t {
+    End = 0,
+    Start = 1,
+    All = 2
+};
 
 class termable
 {
@@ -52,6 +57,8 @@ public:
     virtual void moveLeft(uint32_t amount = 1) = 0;
     virtual void moveRight(uint32_t amount = 1) = 0;
 
+    virtual void clear(ClearType type = ClearType::All) = 0;
+    // virtual void clearLine(ClearType type = ClearType::All) = 0;
 };
 
 class termableLinux : public termable
@@ -64,6 +71,8 @@ public:
     void moveDown(uint32_t amount = 1) override;
     void moveLeft(uint32_t amount = 1) override;
     void moveRight(uint32_t amount = 1) override;
+
+    void clear(ClearType type = ClearType::All) override;
 };
 
 }

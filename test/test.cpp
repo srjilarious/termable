@@ -8,6 +8,7 @@
 int main(int argc, char** argv)
 {
     termable::termableLinux term;
+    term.clear();
     auto sz = term.displaySize();
     printf("Terminal size = %d x %d\n", sz.x, sz.y);
 
