@@ -58,7 +58,7 @@ public:
     virtual void moveRight(uint32_t amount = 1) = 0;
 
     virtual void clear(ClearType type = ClearType::All) = 0;
-    // virtual void clearLine(ClearType type = ClearType::All) = 0;
+    virtual void clearLine(ClearType type = ClearType::All) = 0;
 };
 
 class termableLinux : public termable
@@ -73,6 +73,7 @@ public:
     void moveRight(uint32_t amount = 1) override;
 
     void clear(ClearType type = ClearType::All) override;
+    void clearLine(ClearType type = ClearType::All) override;
 };
 
 }

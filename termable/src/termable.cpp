@@ -64,4 +64,10 @@ termableLinux::clear(ClearType type)
     printf("\u001b[%uJ", static_cast<uint8_t>(type));
 }
 
+void 
+termableLinux::clearLine(ClearType type)
+{
+    printf("\u001b[%uK", static_cast<uint8_t>(type));
+}
+
 }
