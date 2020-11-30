@@ -57,6 +57,9 @@ public:
     virtual void moveLeft(uint32_t amount = 1) = 0;
     virtual void moveRight(uint32_t amount = 1) = 0;
 
+    virtual void moveUpLine(uint32_t amount = 1) = 0;
+    virtual void moveDownLine(uint32_t amount = 1) = 0;
+
     virtual void clear(ClearType type = ClearType::All) = 0;
     virtual void clearLine(ClearType type = ClearType::All) = 0;
 };
@@ -71,6 +74,9 @@ public:
     void moveDown(uint32_t amount = 1) override;
     void moveLeft(uint32_t amount = 1) override;
     void moveRight(uint32_t amount = 1) override;
+
+    void moveUpLine(uint32_t amount = 1) override;
+    void moveDownLine(uint32_t amount = 1) override;
 
     void clear(ClearType type = ClearType::All) override;
     void clearLine(ClearType type = ClearType::All) override;

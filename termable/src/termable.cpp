@@ -59,6 +59,18 @@ termableLinux::moveRight(uint32_t amount)
 }
 
 void 
+termableLinux::moveUpLine(uint32_t amount)
+{
+    printf("\u001b[%uE", amount);
+}
+
+void 
+termableLinux::moveDownLine(uint32_t amount)
+{
+    printf("\u001b[%uF", amount);
+}
+
+void 
 termableLinux::clear(ClearType type)
 {
     printf("\u001b[%uJ", static_cast<uint8_t>(type));
