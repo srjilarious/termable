@@ -8,7 +8,7 @@
 void wipeScreen(uint8_t color, termable::vec2i size) {
     for(int ii = 0; ii < size.y-1; ii++) {
         // Print a line on the screen
-        printf("\r%s",termable::color::color256(color).c_str());
+        printf("\r%s",termable::color::foreground::color256(color).c_str());
         for(int jj = 0; jj < size.x-1; jj++) {
             printf(u8"\u2589");
         }
@@ -22,7 +22,7 @@ int main(int argc, char** argv)
     termable::termableLinux term;
     
     auto sz = term.displaySize();
-    for(uint8_t ii = 0; ii < 255; ii++) {
+    for(uint8_t ii = 100; ii < 116; ii++) {
         term.setCursorPos({0,0});
         wipeScreen(ii, sz);
     }
@@ -32,7 +32,14 @@ int main(int argc, char** argv)
 
     for(int ii = 0; ii < 16; ii++) {
         for(int jj = 0; jj < 16; jj++) {
-            printf("%s%s",  termable::color::color256(ii*16+jj).c_str(), u8"\u2589");
+            printf("%s%s",  termable::color::foreground::color256(ii*16+jj).c_str(), u8"\u2589");
+        }
+        printf("%s\n", termable::color::ResetColor);
+    }
+    printf("\n");
+    for(int ii = 0; ii < 16; ii++) {
+        for(int jj = 0; jj < 16; jj++) {
+            printf("%s %03d ",  termable::color::background::color256(ii*16+jj).c_str(), ii*16+jj);
         }
         printf("%s\n", termable::color::ResetColor);
     }

@@ -8,9 +8,18 @@ namespace termable
 
 namespace color
 {
-
+namespace foreground
+{
 std::string color256(uint8_t which) {
     return std::string("\u001b[38;5;") + std::to_string(which) + "m";
+}
+}
+
+namespace background
+{
+std::string color256(uint8_t which) {
+    return std::string("\u001b[48;5;") + std::to_string(which) + "m";
+}
 }
 
 }
