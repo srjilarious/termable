@@ -8,9 +8,9 @@
 void wipeScreen(uint8_t color, termable::vec2i size) {
     for(int ii = 0; ii < size.y-1; ii++) {
         // Print a line on the screen
-        printf("\r%s",termable::color::foreground::color256(color).c_str());
+        printf("\r%s",termable::color::background::color256(color).c_str());
         for(int jj = 0; jj < size.x-1; jj++) {
-            printf(u8"\u2589");
+            printf(" ");
         }
         printf("%s\n", termable::color::ResetColor);
         std::this_thread::sleep_for(std::chrono::milliseconds(10));

@@ -24,6 +24,38 @@ std::string color256(uint8_t which) {
 
 }
 
+termBuffer::termBuffer(vec2i size) :
+    mSize(size)
+{
+    mBuffer.reserve(size.x*size.y);
+}
+
+vec2i 
+termBuffer::size()
+{
+    return mSize;
+}
+
+void 
+termBuffer::writeChar(
+        vec2i pos, 
+        char c, 
+        color::basic fore, 
+        color::basic back)
+{
+    // TODO: Implement.
+}
+
+void 
+termBuffer::writeStr(
+        vec2i pos, 
+        std::string str, 
+        color::basic fore, 
+        color::basic back)
+{
+    // TODO: Implement.   
+}
+
 vec2i 
 termableLinux::displaySize() const
 {

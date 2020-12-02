@@ -14,8 +14,29 @@ namespace termable
 
 namespace color
 {
+    enum class basic 
+    {
+        Black,
+        Red,
+        Green,
+        Yellow,
+        Blue,
+        Magenta,
+        Cyan,
+        White,
+
+        Gray,
+        BoldRed,
+        BoldGreen,
+        BoldYellow,
+        BoldBlue,
+        BoldMagenta,
+        BoldCyan,
+        BoldWhite
+    };
+
+    // TODO: Move to linux specific impl.
     constexpr const char ResetColor[]   = "\033[0m";
-    
     namespace foreground
     {
         constexpr const char RedColor[]     = "\033[31m";
@@ -66,6 +87,33 @@ struct vec2i {
     int x, y;
 };
 
+struct termChar
+{
+    // Allow for unicode values.
+    std::string val;
+    uint8_t foregroundColor, backgroundColor;
+};
+
+class termBuffer {
+private:
+    std::vector<termChar> mBuffer;
+    vec2i mSize;
+
+public:
+    termBuffer(vec2i size);
+
+    vec2i size();
+    void writeChar(vec2i pos, 
+                char c, 
+                color::basic fore = color::basic::White, 
+                color::basic back = color::basic::Black);
+
+    void writeStr(vec2i pos, 
+                std::string str, 
+                color::basic fore = color::basic::White, 
+                color::basic back = color::basic::Black);
+};
+
 enum ClearType : uint8_t {
     End = 0,
     Start = 1,
@@ -88,6 +136,8 @@ public:
 
     virtual void clear(ClearType type = ClearType::All) = 0;
     virtual void clearLine(ClearType type = ClearType::All) = 0;
+
+    //virtual void renderBuffer(const termBuffer& buffer) = 0;
 };
 
 class termableLinux : public termable
@@ -106,6 +156,8 @@ public:
 
     void clear(ClearType type = ClearType::All) override;
     void clearLine(ClearType type = ClearType::All) override;
+
+    //void renderBuffer(const termBuffer& buffer) override;
 };
 
 }
