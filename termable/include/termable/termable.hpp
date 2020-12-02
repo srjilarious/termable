@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <memory>
 #include <optional>
+#include <variant>
 
 namespace termable
 {
@@ -87,11 +88,14 @@ struct vec2i {
     int x, y;
 };
 
+using termColor = std::variant<color::basic, uint8_t>;
+using utf8Char = std::array<uint8_t, 4>;
+
 struct termChar
 {
-    // Allow for unicode values.
-    std::string val;
-    uint8_t foregroundColor, backgroundColor;
+    // UTF-8 can be 1-4 bytes.
+    utf8Char val;
+    termColor foregroundColor, backgroundColor;
 };
 
 class termBuffer {
@@ -102,16 +106,18 @@ private:
 public:
     termBuffer(vec2i size);
 
-    vec2i size();
+    vec2i size() const;
+    const std::vector<termChar>& buffer() const;
+
     void writeChar(vec2i pos, 
-                char c, 
-                color::basic fore = color::basic::White, 
-                color::basic back = color::basic::Black);
+                utf8Char c, 
+                termColor fore = color::basic::White, 
+                termColor back = color::basic::Black);
 
     void writeStr(vec2i pos, 
                 std::string str, 
-                color::basic fore = color::basic::White, 
-                color::basic back = color::basic::Black);
+                termColor fore = color::basic::White, 
+                termColor back = color::basic::Black);
 };
 
 enum ClearType : uint8_t {
@@ -137,7 +143,7 @@ public:
     virtual void clear(ClearType type = ClearType::All) = 0;
     virtual void clearLine(ClearType type = ClearType::All) = 0;
 
-    //virtual void renderBuffer(const termBuffer& buffer) = 0;
+    virtual void renderBuffer(const termBuffer& buffer) = 0;
 };
 
 class termableLinux : public termable
@@ -157,7 +163,7 @@ public:
     void clear(ClearType type = ClearType::All) override;
     void clearLine(ClearType type = ClearType::All) override;
 
-    //void renderBuffer(const termBuffer& buffer) override;
+    void renderBuffer(const termBuffer& buffer) override;
 };
 
 }

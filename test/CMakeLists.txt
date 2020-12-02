@@ -11,3 +11,13 @@ target_link_libraries(
     test 
     termable
   )
+
+add_executable(
+    buffer
+    buffer.cpp
+)
+
+target_link_libraries(
+    buffer 
+    termable
+  )

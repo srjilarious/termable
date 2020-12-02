@@ -31,27 +31,33 @@ termBuffer::termBuffer(vec2i size) :
 }
 
 vec2i 
-termBuffer::size()
+termBuffer::size() const
 {
     return mSize;
+}
+
+const std::vector<termChar>& 
+termBuffer::buffer() const
+{
+    return mBuffer;
 }
 
 void 
 termBuffer::writeChar(
         vec2i pos, 
-        char c, 
-        color::basic fore, 
-        color::basic back)
+        utf8Char c, 
+        termColor fore, 
+        termColor back)
 {
-    // TODO: Implement.
+    mBuffer[pos.y*mSize.x+pos.x].val = c;
 }
 
 void 
 termBuffer::writeStr(
         vec2i pos, 
         std::string str, 
-        color::basic fore, 
-        color::basic back)
+        termColor fore, 
+        termColor back)
 {
     // TODO: Implement.   
 }
@@ -121,6 +127,53 @@ void
 termableLinux::clearLine(ClearType type)
 {
     printf("\u001b[%uK", static_cast<uint8_t>(type));
+}
+
+
+void 
+termableLinux::renderBuffer(const termBuffer& buffer)
+{
+    // Move to start location
+    setCursorPos({0,0});
+
+    // Render each row of the buffer
+    auto buffSize = buffer.size();
+    for(int yy = 0; yy < buffSize.y; yy++) 
+    {
+        for(int xx = 0; xx < buffSize.x; xx++) 
+        {
+            // TODO: Add in color handling.
+
+            const auto& tChar = buffer.buffer()[yy*buffSize.x+xx];
+            const uint8_t* valPtr = tChar.val.data();
+
+            // Check for single byte UTF-8
+            if((*valPtr & 0x80) == 0x00) {
+                printf("%c", valPtr[0]);
+            }
+            // 2-byte code point
+            else if((*valPtr & 0xe0) == 0xc0) {
+                printf("%c%c", valPtr[0], valPtr[1]);
+            }
+            // 3-byte code point
+            else if((*valPtr & 0xf0) == 0xe0) {
+                printf("%c%c%c", valPtr[0], valPtr[1], valPtr[2]);
+            }
+            // 4-byte code point
+            else if((*valPtr & 0xf8) == 0xf0) {
+                printf("%c%c%c%c", valPtr[0], valPtr[1], valPtr[2], valPtr[3]);
+            }
+            // Incorrect codepoint
+            else {
+                // Print the question mark in a diamond char.
+                printf(u8"\ufffd");
+                //printf("val: %x %x %x %x\n", valPtr[0], valPtr[1], valPtr[2], valPtr[3]);
+            }
+            
+        }
+        printf("\n");
+    }
+
 }
 
 }
