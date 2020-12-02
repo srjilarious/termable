@@ -118,6 +118,10 @@ public:
                 std::string str, 
                 termColor fore = color::basic::White, 
                 termColor back = color::basic::Black);
+
+    void fill(utf8Char c,
+                termColor fore = color::basic::White, 
+                termColor back = color::basic::Black);
 };
 
 enum ClearType : uint8_t {

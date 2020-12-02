@@ -9,14 +9,12 @@
 int main(int argc, char** argv)
 {
     termable::termableLinux term;
+    term.clear();
 
     termable::termBuffer buffer({20,4});
 
-    for(int yy = 0; yy < 4; yy++) {
-        for(int xx = 0; xx < 20; xx++) {
-            buffer.writeChar({xx, yy}, {0xc3, 0x97});
-        }
-    }
+    buffer.fill({0xc3, 0x97});
+
     buffer.writeChar({0, 0}, {'a'});
     buffer.writeChar({1, 0}, {'e'});
     buffer.writeChar({2, 0}, {'i'});
@@ -32,7 +30,7 @@ int main(int argc, char** argv)
 
     // U+1f600 - smiley face
     buffer.writeChar({0, 2}, {0xf0, 0x9f, 0x98, 0x80});
-
+    
     term.renderBuffer(buffer);
 
     return 0;

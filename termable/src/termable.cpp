@@ -27,7 +27,7 @@ std::string color256(uint8_t which) {
 termBuffer::termBuffer(vec2i size) :
     mSize(size)
 {
-    mBuffer.reserve(size.x*size.y);
+    mBuffer.resize(size.x*size.y);
 }
 
 vec2i 
@@ -60,6 +60,23 @@ termBuffer::writeStr(
         termColor back)
 {
     // TODO: Implement.   
+}
+
+
+void 
+termBuffer::fill(
+        utf8Char c,
+        termColor fore, 
+        termColor back)
+{
+    for(int ii = 0; ii < mBuffer.size(); ii++) {
+        mBuffer[ii].val = c;// = {c, fore, back};
+    }
+    // for(auto& tc : mBuffer) {
+    //     tc.val = c;
+    //     tc.foregroundColor = fore;
+    //     tc.backgroundColor = back; 
+    // }
 }
 
 vec2i 
