@@ -13,13 +13,13 @@ int main(int argc, char** argv)
 
     termable::termBuffer buffer({20,4});
 
-    buffer.fill({0xc3, 0x97});
+    buffer.fill({0xc3, 0x97}, termable::color::basic::BoldCyan, termable::color::basic::Blue);
 
-    buffer.writeChar({0, 0}, {'a'});
-    buffer.writeChar({1, 0}, {'e'});
-    buffer.writeChar({2, 0}, {'i'});
-    buffer.writeChar({3, 0}, {'o'});
-    buffer.writeChar({4, 0}, {'u'});
+    buffer.writeChar({0, 0}, {'a'}, termable::color::basic::BoldRed);
+    buffer.writeChar({1, 0}, {'e'}, termable::color::basic::BoldYellow);
+    buffer.writeChar({2, 0}, {'i'}, termable::color::basic::BoldBlue);
+    buffer.writeChar({3, 0}, {'o'}, termable::color::basic::BoldGreen);
+    buffer.writeChar({4, 0}, {'u'}, termable::color::basic::BoldMagenta);
 
     // Hiragana a i u e o
     buffer.writeChar({0, 1}, {0xe3, 0x81, 0x82});

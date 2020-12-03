@@ -1,5 +1,6 @@
 #include <termable/termable.hpp>
 
+#include <variant>
 #include <sys/ioctl.h> //ioctl() and TIOCGWINSZ
 #include <unistd.h> // for STDOUT_FILENO
 
@@ -49,7 +50,7 @@ termBuffer::writeChar(
         termColor fore, 
         termColor back)
 {
-    mBuffer[pos.y*mSize.x+pos.x].val = c;
+    mBuffer[pos.y*mSize.x+pos.x] = {c, fore, back};
 }
 
 void 
@@ -69,14 +70,9 @@ termBuffer::fill(
         termColor fore, 
         termColor back)
 {
-    for(int ii = 0; ii < mBuffer.size(); ii++) {
-        mBuffer[ii].val = c;// = {c, fore, back};
+    for(auto& tc : mBuffer) {
+        tc = {c, fore, back};
     }
-    // for(auto& tc : mBuffer) {
-    //     tc.val = c;
-    //     tc.foregroundColor = fore;
-    //     tc.backgroundColor = back; 
-    // }
 }
 
 vec2i 
@@ -153,6 +149,12 @@ termableLinux::renderBuffer(const termBuffer& buffer)
     // Move to start location
     setCursorPos({0,0});
 
+    // Rest color
+    printf(color::ResetColor);
+
+    termColor fore = color::basic::White;
+    termColor back = color::basic::Black;
+
     // Render each row of the buffer
     auto buffSize = buffer.size();
     for(int yy = 0; yy < buffSize.y; yy++) 
@@ -162,6 +164,119 @@ termableLinux::renderBuffer(const termBuffer& buffer)
             // TODO: Add in color handling.
 
             const auto& tChar = buffer.buffer()[yy*buffSize.x+xx];
+
+            // Check color and change if needed
+            if(tChar.backgroundColor != back) {
+                back = tChar.backgroundColor;
+                if(std::holds_alternative<color::basic>(tChar.backgroundColor)) {
+                    color::basic basicBg = std::get<color::basic>(tChar.backgroundColor);
+                    switch (basicBg)
+                    {
+                        case color::basic::Red:
+                            printf(color::background::RedColor);
+                            break;
+                        case color::basic::Green:
+                            printf(color::background::GreenColor);
+                            break;
+                        case color::basic::Yellow:
+                            printf(color::background::YellowColor);
+                            break;
+                        case color::basic::Blue:
+                            printf(color::background::BlueColor);
+                            break;
+                        case color::basic::Magenta:
+                            printf(color::background::MagentaColor);
+                            break;
+                        case color::basic::Cyan:
+                            printf(color::background::CyanColor);
+                            break;
+                        case color::basic::White:
+                            printf(color::background::WhiteColor);
+                            break;
+                        case color::basic::BoldRed:
+                            printf(color::background::BoldRedColor);
+                            break;
+                        case color::basic::BoldGreen:
+                            printf(color::background::BoldGreenColor);
+                            break;
+                        case color::basic::BoldYellow:
+                            printf(color::background::BoldYellowColor);
+                            break;
+                        case color::basic::BoldBlue:
+                            printf(color::background::BoldBlueColor);
+                            break;
+                        case color::basic::BoldMagenta:
+                            printf(color::background::BoldMagentaColor);
+                            break;
+                        case color::basic::BoldCyan:
+                            printf(color::background::BoldCyanColor);
+                            break;
+                        case color::basic::BoldWhite:
+                            printf(color::background::BoldWhiteColor);
+                            break;
+                    }
+                }
+                else {
+                    printf("%s", color::background::color256(std::get<uint8_t>(tChar.backgroundColor)).c_str());
+                }
+            }
+
+            if(tChar.foregroundColor != fore) {
+                back = tChar.foregroundColor;
+                if(std::holds_alternative<color::basic>(tChar.foregroundColor)) {
+                    color::basic basicFg = std::get<color::basic>(tChar.foregroundColor);
+                    switch (basicFg)
+                    {
+                        case color::basic::Red:
+                            printf(color::foreground::RedColor);
+                            break;
+                        case color::basic::Green:
+                            printf(color::foreground::GreenColor);
+                            break;
+                        case color::basic::Yellow:
+                            printf(color::foreground::YellowColor);
+                            break;
+                        case color::basic::Blue:
+                            printf(color::foreground::BlueColor);
+                            break;
+                        case color::basic::Magenta:
+                            printf(color::foreground::MagentaColor);
+                            break;
+                        case color::basic::Cyan:
+                            printf(color::foreground::CyanColor);
+                            break;
+                        case color::basic::White:
+                            printf(color::foreground::WhiteColor);
+                            break;
+                        case color::basic::BoldRed:
+                            printf(color::foreground::BoldRedColor);
+                            break;
+                        case color::basic::BoldGreen:
+                            printf(color::foreground::BoldGreenColor);
+                            break;
+                        case color::basic::BoldYellow:
+                            printf(color::foreground::BoldYellowColor);
+                            break;
+                        case color::basic::BoldBlue:
+                            printf(color::foreground::BoldBlueColor);
+                            break;
+                        case color::basic::BoldMagenta:
+                            printf(color::foreground::BoldMagentaColor);
+                            break;
+                        case color::basic::BoldCyan:
+                            printf(color::foreground::BoldCyanColor);
+                            break;
+                        case color::basic::BoldWhite:
+                            printf(color::foreground::BoldWhiteColor);
+                            break;
+                    }
+                }
+                else {
+                    printf("%s", color::foreground::color256(std::get<uint8_t>(tChar.foregroundColor)).c_str());
+                }
+            }
+
+            // Write out character
             const uint8_t* valPtr = tChar.val.data();
 
             // Check for single byte UTF-8
