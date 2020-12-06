@@ -17,6 +17,7 @@ namespace color
 {
     enum class basic 
     {
+        Reset,
         Black,
         Red,
         Green,
@@ -40,6 +41,7 @@ namespace color
     constexpr const char ResetColor[]   = "\033[0m";
     namespace foreground
     {
+        constexpr const char BlackColor[]     = "\033[30m";
         constexpr const char RedColor[]     = "\033[31m";
         constexpr const char GreenColor[]   = "\033[32m";
         constexpr const char YellowColor[]  = "\033[33m";
@@ -62,6 +64,7 @@ namespace color
 
     namespace background
     {
+        constexpr const char BlackColor[]     = "\033[40m";
         constexpr const char RedColor[]     = "\033[41m";
         constexpr const char GreenColor[]   = "\033[42m";
         constexpr const char YellowColor[]  = "\033[43m";
@@ -111,17 +114,17 @@ public:
 
     void writeChar(vec2i pos, 
                 utf8Char c, 
-                termColor fore = color::basic::White, 
-                termColor back = color::basic::Black);
+                termColor fore = color::basic::Reset, 
+                termColor back = color::basic::Reset);
 
     void writeStr(vec2i pos, 
                 std::string str, 
-                termColor fore = color::basic::White, 
-                termColor back = color::basic::Black);
+                termColor fore = color::basic::Reset, 
+                termColor back = color::basic::Reset);
 
     void fill(utf8Char c,
-                termColor fore = color::basic::White, 
-                termColor back = color::basic::Black);
+                termColor fore = color::basic::Reset, 
+                termColor back = color::basic::Reset);
 };
 
 enum ClearType : uint8_t {
@@ -147,6 +150,9 @@ public:
     virtual void clear(ClearType type = ClearType::All) = 0;
     virtual void clearLine(ClearType type = ClearType::All) = 0;
 
+    virtual void setBackgroundColor(termColor color) = 0;
+    virtual void setForegroundColor(termColor color) = 0;
+
     virtual void renderBuffer(const termBuffer& buffer) = 0;
 };
 
@@ -166,6 +172,9 @@ public:
 
     void clear(ClearType type = ClearType::All) override;
     void clearLine(ClearType type = ClearType::All) override;
+
+    void setBackgroundColor(termColor color) override;
+    void setForegroundColor(termColor color) override;
 
     void renderBuffer(const termBuffer& buffer) override;
 };
