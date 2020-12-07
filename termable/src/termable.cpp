@@ -1,6 +1,7 @@
 #include <termable/termable.hpp>
 
 #include <variant>
+#include <optional>
 #include <sys/ioctl.h> //ioctl() and TIOCGWINSZ
 #include <unistd.h> // for STDOUT_FILENO
 
@@ -25,6 +26,36 @@ std::string color256(uint8_t which) {
 
 }
 
+
+namespace utf
+{
+
+std::optional<uint8_t> 
+numBytesInUtf8Char(const uint8_t* ch)
+{
+    // Check for single byte UTF-8
+    if((*ch & 0x80) == 0x00) {
+        return std::optional<uint8_t>(1);
+    }
+    // 2-byte code point
+    else if((*ch & 0xe0) == 0xc0) {
+        return std::optional<uint8_t>(2);
+    }
+    // 3-byte code point
+    else if((*ch & 0xf0) == 0xe0) {
+        return std::optional<uint8_t>(3);
+    }
+    // 4-byte code point
+    else if((*ch & 0xf8) == 0xf0) {
+        return std::optional<uint8_t>(4);
+    }
+    // Incorrect codepoint
+    else {
+        return std::nullopt;
+    }
+}
+
+}
 termBuffer::termBuffer(vec2i size) :
     mSize(size)
 {
@@ -298,31 +329,31 @@ termableLinux::renderBuffer(const termBuffer& buffer)
 
             // Write out character
             const uint8_t* valPtr = tChar.val.data();
+            auto utfByteCountOpt = utf::numBytesInUtf8Char(valPtr);
 
-            // Check for single byte UTF-8
-            if((*valPtr & 0x80) == 0x00) {
-                printf("%c", valPtr[0]);
+            if(utfByteCountOpt.has_value())
+            {
+                auto byteCount = utfByteCountOpt.value();
+                if(byteCount == 1) {
+                    printf("%c", valPtr[0]);
+                }
+                else if(byteCount == 2) {
+                    printf("%c%c", valPtr[0], valPtr[1]);
+                }
+                else if(byteCount == 3) {
+                    printf("%c%c%c", valPtr[0], valPtr[1], valPtr[2]);
+                }
+                else if(byteCount == 4) {
+                    printf("%c%c%c%c", valPtr[0], valPtr[1], valPtr[2], valPtr[3]);
+                }
             }
-            // 2-byte code point
-            else if((*valPtr & 0xe0) == 0xc0) {
-                printf("%c%c", valPtr[0], valPtr[1]);
-            }
-            // 3-byte code point
-            else if((*valPtr & 0xf0) == 0xe0) {
-                printf("%c%c%c", valPtr[0], valPtr[1], valPtr[2]);
-            }
-            // 4-byte code point
-            else if((*valPtr & 0xf8) == 0xf0) {
-                printf("%c%c%c%c", valPtr[0], valPtr[1], valPtr[2], valPtr[3]);
-            }
-            // Incorrect codepoint
-            else {
-                // Print the question mark in a diamond char.
+            else 
+            {
+                // Incorrect codepoint - Print the question mark in a diamond char.
                 printf(u8"\ufffd");
-                //printf("val: %x %x %x %x\n", valPtr[0], valPtr[1], valPtr[2], valPtr[3]);
             }
-            
         }
+
         printf("\n");
     }
 
