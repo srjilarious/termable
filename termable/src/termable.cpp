@@ -84,14 +84,48 @@ termBuffer::writeChar(
     mBuffer[pos.y*mSize.x+pos.x] = {c, fore, back};
 }
 
-void 
+int
 termBuffer::writeStr(
         vec2i pos, 
         std::string str, 
         termColor fore, 
         termColor back)
 {
-    // TODO: Implement.   
+    int written = 0;
+    const uint8_t* ch = reinterpret_cast<const uint8_t*>(str.data());
+    auto bufferOffset = pos.y*mSize.x+pos.x;
+    while(*ch != '\0') {
+        auto numBytesOpt = utf::numBytesInUtf8Char(ch);
+        if(numBytesOpt.has_value()) {
+            auto numBytes = numBytesOpt.value();
+            if(numBytes == 1) {
+                mBuffer[bufferOffset] = {{ch[0], 0, 0, 0}, fore, back};
+            }
+            else if(numBytes == 2) {
+                mBuffer[bufferOffset] = {{ch[0], ch[1], 0, 0}, fore, back};
+            }
+            else if(numBytes == 3) {
+                mBuffer[bufferOffset] = {{ch[0], ch[1], ch[2], 0}, fore, back};
+            }
+            else if(numBytes == 4) {
+                mBuffer[bufferOffset] = {{ch[0], ch[1], ch[2], ch[3]}, fore, back};
+            }
+            else {
+                // Error, so bail out.
+                return written;
+            }
+
+            ch+= numBytes;
+            bufferOffset++;
+            written++;
+        }
+        else {
+            // Hit invalid codepoint, so exit.
+            return written;
+        }
+    }
+
+    return written;
 }
 
 
@@ -317,18 +351,11 @@ termableLinux::renderBuffer(const termBuffer& buffer)
             const auto& tChar = buffer.buffer()[yy*buffSize.x+xx];
 
             // Check color and change if needed
-            //if(tChar.backgroundColor != back) {
-            //    back = tChar.backgroundColor;
-                setBackgroundColor(tChar.backgroundColor);
-            //}
-
-            //if(tChar.foregroundColor != fore) {
-            //    fore = tChar.foregroundColor;
-                setForegroundColor(tChar.foregroundColor);
-            //}
+            setBackgroundColor(tChar.backgroundColor);
+            setForegroundColor(tChar.foregroundColor);
 
             // Write out character
-            const uint8_t* valPtr = tChar.val.data();
+            const uint8_t* valPtr = static_cast<const uint8_t*>(tChar.val.data());
             auto utfByteCountOpt = utf::numBytesInUtf8Char(valPtr);
 
             if(utfByteCountOpt.has_value())

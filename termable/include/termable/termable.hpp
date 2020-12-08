@@ -112,12 +112,15 @@ public:
     vec2i size() const;
     const std::vector<termChar>& buffer() const;
 
+    // Writes the a UTF-8 codepoint to the buffer at the given position.
     void writeChar(vec2i pos, 
                 utf8Char c, 
                 termColor fore = color::basic::Reset, 
                 termColor back = color::basic::Reset);
 
-    void writeStr(vec2i pos, 
+    // Writes out a UTF-8 string into the buffer, returning the 
+    // number of codepoints written out.
+    int writeStr(vec2i pos, 
                 std::string str, 
                 termColor fore = color::basic::Reset, 
                 termColor back = color::basic::Reset);

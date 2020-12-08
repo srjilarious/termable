@@ -11,7 +11,7 @@ int main(int argc, char** argv)
     termable::termableLinux term;
     term.clear();
 
-    termable::termBuffer buffer({20,4});
+    termable::termBuffer buffer({20,5});
 
     buffer.fill({0xc3, 0x97}, termable::color::basic::BoldRed, termable::color::basic::Reset);
 
@@ -31,6 +31,8 @@ int main(int argc, char** argv)
     // U+1f600 - smiley face
     buffer.writeChar({0, 2}, {0xf0, 0x9f, 0x98, 0x80}, termable::color::basic::BoldYellow, termable::color::basic::Black);
     
+    buffer.writeStr({2, 3}, u8"Grüss Gott!", termable::color::basic::BoldYellow, termable::color::basic::Blue);
+    buffer.writeStr({1,4}, u8"\u00e4\u2308\u2309\u231b");
     term.renderBuffer(buffer);
 
     return 0;
