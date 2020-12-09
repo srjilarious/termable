@@ -6,15 +6,16 @@
 #include <thread>
 
 void wipeScreen(uint8_t color, termable::vec2i size) {
-    for(int ii = 0; ii < size.y-1; ii++) {
-        // Print a line on the screen
-        printf("\r%s",termable::color::background::color256(color).c_str());
-        for(int jj = 0; jj < size.x-1; jj++) {
-            printf(" ");
-        }
-        printf("%s\n", termable::color::ResetColor);
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    }
+    // TODO: Fix.
+    // for(int ii = 0; ii < size.y-1; ii++) {
+    //     // Print a line on the screen
+    //     printf("\r%s",termable::color::background::color256(color).c_str());
+    //     for(int jj = 0; jj < size.x-1; jj++) {
+    //         printf(" ");
+    //     }
+    //     printf("%s\n", termable::color::ResetColor);
+    //     std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    // }
 }
 
 int main(int argc, char** argv)
@@ -22,27 +23,28 @@ int main(int argc, char** argv)
     termable::termableLinux term;
     
     auto sz = term.displaySize();
-    for(uint8_t ii = 100; ii < 116; ii++) {
-        term.setCursorPos({0,0});
-        wipeScreen(ii, sz);
-    }
+    // for(uint8_t ii = 100; ii < 116; ii++) {
+    //     term.setCursorPos({0,0});
+    //     wipeScreen(ii, sz);
+    // }
 
     term.clear();
     printf("Terminal size = %d x %d\n", sz.x, sz.y);
 
-    for(int ii = 0; ii < 16; ii++) {
-        for(int jj = 0; jj < 16; jj++) {
-            printf("%s%s",  termable::color::foreground::color256(ii*16+jj).c_str(), u8"\u2589");
-        }
-        printf("%s\n", termable::color::ResetColor);
-    }
-    printf("\n");
-    for(int ii = 0; ii < 16; ii++) {
-        for(int jj = 0; jj < 16; jj++) {
-            printf("%s %03d ",  termable::color::background::color256(ii*16+jj).c_str(), ii*16+jj);
-        }
-        printf("%s\n", termable::color::ResetColor);
-    }
+    // TODO: Fix.
+    // for(int ii = 0; ii < 16; ii++) {
+    //     for(int jj = 0; jj < 16; jj++) {
+    //         printf("%s%s",  termable::color::foreground::color256(ii*16+jj).c_str(), u8"\u2589");
+    //     }
+    //     printf("%s\n", termable::color::ResetColor);
+    // }
+    // printf("\n");
+    // for(int ii = 0; ii < 16; ii++) {
+    //     for(int jj = 0; jj < 16; jj++) {
+    //         printf("%s %03d ",  termable::color::background::color256(ii*16+jj).c_str(), ii*16+jj);
+    //     }
+    //     printf("%s\n", termable::color::ResetColor);
+    // }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(250));
     term.moveUp(3);

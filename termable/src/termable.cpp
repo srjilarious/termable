@@ -7,23 +7,62 @@
 
 namespace termable
 {
-
+namespace lin 
+{
 namespace color
 {
+    constexpr const char ResetColor[]   = "\033[0m";
+
 namespace foreground
 {
-std::string color256(uint8_t which) {
-    return std::string("\u001b[38;5;") + std::to_string(which) + "m";
-}
+    constexpr const char BlackColor[]     = "\033[30m";
+    constexpr const char RedColor[]     = "\033[31m";
+    constexpr const char GreenColor[]   = "\033[32m";
+    constexpr const char YellowColor[]  = "\033[33m";
+    constexpr const char BlueColor[]    = "\033[34m";
+    constexpr const char MagentaColor[] = "\033[35m";
+    constexpr const char CyanColor[]    = "\033[36m";
+    constexpr const char WhiteColor[]   = "\033[37m";
+
+    constexpr const char GrayColor[]       = "\033[90m";
+    constexpr const char BoldRedColor[]    = "\033[91m";
+    constexpr const char BoldGreenColor[]  = "\033[92m";
+    constexpr const char BoldYellowColor[] = "\033[93m";
+    constexpr const char BoldBlueColor[]   = "\033[94m";
+    constexpr const char BoldMagentaColor[]= "\033[95m";
+    constexpr const char BoldCyanColor[]   = "\033[96m";
+    constexpr const char BoldWhiteColor[]  = "\033[97m";
+
+    std::string color256(uint8_t which) {
+        return std::string("\u001b[38;5;") + std::to_string(which) + "m";
+    }
 }
 
 namespace background
 {
-std::string color256(uint8_t which) {
-    return std::string("\u001b[48;5;") + std::to_string(which) + "m";
-}
-}
+    constexpr const char BlackColor[]     = "\033[40m";
+    constexpr const char RedColor[]     = "\033[41m";
+    constexpr const char GreenColor[]   = "\033[42m";
+    constexpr const char YellowColor[]  = "\033[43m";
+    constexpr const char BlueColor[]    = "\033[44m";
+    constexpr const char MagentaColor[] = "\033[45m";
+    constexpr const char CyanColor[]    = "\033[46m";
+    constexpr const char WhiteColor[]   = "\033[47m";
 
+    constexpr const char GrayColor[]       = "\033[40;1m";
+    constexpr const char BoldRedColor[]    = "\033[41;1m";
+    constexpr const char BoldGreenColor[]  = "\033[42;1m";
+    constexpr const char BoldYellowColor[] = "\033[43;1m";
+    constexpr const char BoldBlueColor[]   = "\033[44;1m";
+    constexpr const char BoldMagentaColor[]= "\033[45;1m";
+    constexpr const char BoldCyanColor[]   = "\033[46;1m";
+    constexpr const char BoldWhiteColor[]  = "\033[47;1m";
+
+    std::string color256(uint8_t which) {
+        return std::string("\u001b[48;5;") + std::to_string(which) + "m";
+    }
+}
+}
 }
 
 
@@ -214,57 +253,57 @@ void termableLinux::setBackgroundColor(termColor color)
         switch (basicBg)
         {
             case color::basic::Reset:
-                printf(color::ResetColor);
+                printf(lin::color::ResetColor);
                 break;
             case color::basic::Black:
-                printf(color::background::BlackColor);
+                printf(lin::color::background::BlackColor);
                 break;
             case color::basic::Red:
-                printf(color::background::RedColor);
+                printf(lin::color::background::RedColor);
                 break;
             case color::basic::Green:
-                printf(color::background::GreenColor);
+                printf(lin::color::background::GreenColor);
                 break;
             case color::basic::Yellow:
-                printf(color::background::YellowColor);
+                printf(lin::color::background::YellowColor);
                 break;
             case color::basic::Blue:
-                printf(color::background::BlueColor);
+                printf(lin::color::background::BlueColor);
                 break;
             case color::basic::Magenta:
-                printf(color::background::MagentaColor);
+                printf(lin::color::background::MagentaColor);
                 break;
             case color::basic::Cyan:
-                printf(color::background::CyanColor);
+                printf(lin::color::background::CyanColor);
                 break;
             case color::basic::White:
-                printf(color::background::WhiteColor);
+                printf(lin::color::background::WhiteColor);
                 break;
             case color::basic::BoldRed:
-                printf(color::background::BoldRedColor);
+                printf(lin::color::background::BoldRedColor);
                 break;
             case color::basic::BoldGreen:
-                printf(color::background::BoldGreenColor);
+                printf(lin::color::background::BoldGreenColor);
                 break;
             case color::basic::BoldYellow:
-                printf(color::background::BoldYellowColor);
+                printf(lin::color::background::BoldYellowColor);
                 break;
             case color::basic::BoldBlue:
-                printf(color::background::BoldBlueColor);
+                printf(lin::color::background::BoldBlueColor);
                 break;
             case color::basic::BoldMagenta:
-                printf(color::background::BoldMagentaColor);
+                printf(lin::color::background::BoldMagentaColor);
                 break;
             case color::basic::BoldCyan:
-                printf(color::background::BoldCyanColor);
+                printf(lin::color::background::BoldCyanColor);
                 break;
             case color::basic::BoldWhite:
-                printf(color::background::BoldWhiteColor);
+                printf(lin::color::background::BoldWhiteColor);
                 break;
         }
     }
     else {
-        printf("%s", color::background::color256(std::get<uint8_t>(color)).c_str());
+        printf("%s", lin::color::background::color256(std::get<uint8_t>(color)).c_str());
     }
 }
 
@@ -275,57 +314,57 @@ void termableLinux::setForegroundColor(termColor color)
         switch (basicFg)
         {
             case color::basic::Reset:
-                printf(color::ResetColor);
+                printf(lin::color::ResetColor);
                 break;
             case color::basic::Black:
-                printf(color::foreground::BlackColor);
+                printf(lin::color::foreground::BlackColor);
                 break;
             case color::basic::Red:
-                printf(color::foreground::RedColor);
+                printf(lin::color::foreground::RedColor);
                 break;
             case color::basic::Green:
-                printf(color::foreground::GreenColor);
+                printf(lin::color::foreground::GreenColor);
                 break;
             case color::basic::Yellow:
-                printf(color::foreground::YellowColor);
+                printf(lin::color::foreground::YellowColor);
                 break;
             case color::basic::Blue:
-                printf(color::foreground::BlueColor);
+                printf(lin::color::foreground::BlueColor);
                 break;
             case color::basic::Magenta:
-                printf(color::foreground::MagentaColor);
+                printf(lin::color::foreground::MagentaColor);
                 break;
             case color::basic::Cyan:
-                printf(color::foreground::CyanColor);
+                printf(lin::color::foreground::CyanColor);
                 break;
             case color::basic::White:
-                printf(color::foreground::WhiteColor);
+                printf(lin::color::foreground::WhiteColor);
                 break;
             case color::basic::BoldRed:
-                printf(color::foreground::BoldRedColor);
+                printf(lin::color::foreground::BoldRedColor);
                 break;
             case color::basic::BoldGreen:
-                printf(color::foreground::BoldGreenColor);
+                printf(lin::color::foreground::BoldGreenColor);
                 break;
             case color::basic::BoldYellow:
-                printf(color::foreground::BoldYellowColor);
+                printf(lin::color::foreground::BoldYellowColor);
                 break;
             case color::basic::BoldBlue:
-                printf(color::foreground::BoldBlueColor);
+                printf(lin::color::foreground::BoldBlueColor);
                 break;
             case color::basic::BoldMagenta:
-                printf(color::foreground::BoldMagentaColor);
+                printf(lin::color::foreground::BoldMagentaColor);
                 break;
             case color::basic::BoldCyan:
-                printf(color::foreground::BoldCyanColor);
+                printf(lin::color::foreground::BoldCyanColor);
                 break;
             case color::basic::BoldWhite:
-                printf(color::foreground::BoldWhiteColor);
+                printf(lin::color::foreground::BoldWhiteColor);
                 break;
         }
     }
     else {
-        printf("%s", color::foreground::color256(std::get<uint8_t>(color)).c_str());
+        printf("%s", lin::color::foreground::color256(std::get<uint8_t>(color)).c_str());
     }
 }
 
@@ -337,7 +376,7 @@ termableLinux::renderBuffer(const termBuffer& buffer)
     setCursorPos({0,0});
 
     // Rest color
-    printf(color::ResetColor);
+    printf(lin::color::ResetColor);
 
     termColor fore = color::basic::White;
     termColor back = color::basic::Black;
@@ -385,7 +424,7 @@ termableLinux::renderBuffer(const termBuffer& buffer)
     }
 
     // Rest color
-    printf(color::ResetColor);
+    printf(lin::color::ResetColor);
 }
 
 }
