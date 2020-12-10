@@ -109,6 +109,9 @@ public:
     virtual void setForegroundColor(termColor color) = 0;
 
     virtual void renderBuffer(const termBuffer& buffer) = 0;
+
+    // Render a buffer skipping over parts that are the same as the old buffer.
+    virtual void renderBuffer(const termBuffer& currBuffer, const termBuffer& oldBuffer) = 0;
 };
 
 namespace utf
@@ -139,6 +142,7 @@ public:
     void setForegroundColor(termColor color) override;
 
     void renderBuffer(const termBuffer& buffer) override;
+    void renderBuffer(const termBuffer& currBuffer, const termBuffer& oldBuffer) override;
 };
 
 }

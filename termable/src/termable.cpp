@@ -94,6 +94,34 @@ numBytesInUtf8Char(const uint8_t* ch)
     }
 }
 
+void 
+writeUtf8Char(const uint8_t* ch)
+{
+    auto utfByteCountOpt = utf::numBytesInUtf8Char(ch);
+
+    if(utfByteCountOpt.has_value())
+    {
+        auto byteCount = utfByteCountOpt.value();
+        if(byteCount == 1) {
+            printf("%c", ch[0]);
+        }
+        else if(byteCount == 2) {
+            printf("%c%c", ch[0], ch[1]);
+        }
+        else if(byteCount == 3) {
+            printf("%c%c%c", ch[0], ch[1], ch[2]);
+        }
+        else if(byteCount == 4) {
+            printf("%c%c%c%c", ch[0], ch[1], ch[2], ch[3]);
+        }
+    }
+    else 
+    {
+        // Incorrect codepoint - Print the question mark in a diamond char.
+        printf(u8"\ufffd");
+    }
+}
+
 }
 termBuffer::termBuffer(vec2i size) :
     mSize(size)
@@ -394,30 +422,7 @@ termableLinux::renderBuffer(const termBuffer& buffer)
             setForegroundColor(tChar.foregroundColor);
 
             // Write out character
-            const uint8_t* valPtr = static_cast<const uint8_t*>(tChar.val.data());
-            auto utfByteCountOpt = utf::numBytesInUtf8Char(valPtr);
-
-            if(utfByteCountOpt.has_value())
-            {
-                auto byteCount = utfByteCountOpt.value();
-                if(byteCount == 1) {
-                    printf("%c", valPtr[0]);
-                }
-                else if(byteCount == 2) {
-                    printf("%c%c", valPtr[0], valPtr[1]);
-                }
-                else if(byteCount == 3) {
-                    printf("%c%c%c", valPtr[0], valPtr[1], valPtr[2]);
-                }
-                else if(byteCount == 4) {
-                    printf("%c%c%c%c", valPtr[0], valPtr[1], valPtr[2], valPtr[3]);
-                }
-            }
-            else 
-            {
-                // Incorrect codepoint - Print the question mark in a diamond char.
-                printf(u8"\ufffd");
-            }
+            utf::writeUtf8Char(tChar.val.data());
         }
 
         printf("\n");
@@ -425,6 +430,43 @@ termableLinux::renderBuffer(const termBuffer& buffer)
 
     // Rest color
     printf(lin::color::ResetColor);
+}
+
+
+void 
+termableLinux::renderBuffer(
+        const termBuffer& currBuffer, 
+        const termBuffer& oldBuffer
+    )
+{
+    auto oldSize = oldBuffer.size();
+
+    // Render each row of the buffer
+    auto buffSize = currBuffer.size();
+    size_t buffAddr = 0;
+    for(int yy = 0; yy < buffSize.y; yy++) 
+    {
+        int lastX = -1;
+        for(int xx = 0; xx < buffSize.x; xx++) {
+            const auto& oldCh = oldBuffer.buffer()[buffAddr];
+            const auto& newCh = currBuffer.buffer()[buffAddr];
+            if(oldCh.val != newCh.val ||
+               oldCh.backgroundColor != newCh.backgroundColor ||
+               oldCh.foregroundColor != newCh.foregroundColor) {
+                if(lastX != xx) {
+                    setCursorPos({xx, yy});
+                    lastX = xx;
+                }
+                
+                // Check color and change if needed
+                setBackgroundColor(newCh.backgroundColor);
+                setForegroundColor(newCh.foregroundColor);
+                utf::writeUtf8Char(newCh.val.data());
+            }
+        }
+
+        buffAddr++;
+    }
 }
 
 }
