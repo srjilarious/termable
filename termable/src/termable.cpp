@@ -450,19 +450,21 @@ termableLinux::renderBuffer(
         for(int xx = 0; xx < buffSize.x; xx++) {
             const auto& oldCh = oldBuffer.buffer()[buffAddr];
             const auto& newCh = currBuffer.buffer()[buffAddr];
-            if(oldCh.val != newCh.val ||
+            if(oldCh.val != newCh.val /*||
                oldCh.backgroundColor != newCh.backgroundColor ||
-               oldCh.foregroundColor != newCh.foregroundColor) {
+               oldCh.foregroundColor != newCh.foregroundColor*/) {
                 if(lastX != xx) {
                     setCursorPos({xx, yy});
                     lastX = xx;
                 }
                 
                 // Check color and change if needed
-                setBackgroundColor(newCh.backgroundColor);
-                setForegroundColor(newCh.foregroundColor);
+                //setBackgroundColor(newCh.backgroundColor);
+                //setForegroundColor(newCh.foregroundColor);
                 utf::writeUtf8Char(newCh.val.data());
             }
+
+            buffAddr++;
         }
 
         buffAddr++;

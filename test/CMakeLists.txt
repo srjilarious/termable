@@ -21,3 +21,14 @@ target_link_libraries(
     buffer 
     termable
   )
+
+
+add_executable(
+    double_buffer
+    double_buffer.cpp
+)
+
+target_link_libraries(
+    double_buffer 
+    termable
+  )
