@@ -4,39 +4,39 @@
 #include <cstdio>
 #include <chrono>
 #include <thread>
+#include <random>
 
 int main(int argc, char** argv)
 {
     termable::termableLinux term;
     term.clear();
 
-    termable::termBuffer buffer1({20,5}), buffer2({20,5});
-    buffer1.fill({' '}, termable::color::basic::BoldWhite, termable::color::basic::Blue);
-    buffer2.fill({' '}, termable::color::basic::BoldWhite, termable::color::basic::Blue);
+    auto sz = term.displaySize();    
+    termable::termBuffer buffer1(sz), buffer2(sz);
+    buffer1.fill({' '}, termable::color::basic::BoldWhite, termable::color::basic::Black);
+    buffer2.fill({'.'}, termable::color::basic::BoldWhite, termable::color::basic::Black);
 
     termable::termBuffer *currBuffer = &buffer1;
     termable::termBuffer *oldBuffer = &buffer2;
 
+    std::default_random_engine rand;
+    std::uniform_int_distribution<int> dist_x(0, sz.x-1), dist_y(0, sz.y-1);
+
     std::vector<termable::vec2i> stars;
-    stars.push_back({1, 0});
-    stars.push_back({13, 0});
-    stars.push_back({4, 1});
-    stars.push_back({19, 1});
-    stars.push_back({8, 2});
-    stars.push_back({15, 2});
-    stars.push_back({4, 3});
-    stars.push_back({16, 4});
+    for(int ii = 0; ii < 100; ii++) {
+        stars.push_back({dist_x(rand), dist_y(rand)});
+    }
 
     for(int cnt = 0; cnt < 1000; cnt++) {
 
-        currBuffer->fill({' '}, termable::color::basic::BoldWhite, termable::color::basic::Blue);
+        currBuffer->fill({' '}, termable::color::basic::BoldWhite, termable::color::basic::Black);
         for(auto& s : stars) {
             s.x++;
-            if(s.x > 19) {
+            if(s.x >= sz.x) {
                 s.x = 0;
             }
 
-            currBuffer->writeChar(s, {'*'});
+            currBuffer->writeChar(s, {'*'}, termable::color::basic::BoldYellow, termable::color::basic::Black);
         }
 
         term.setCursorPos({0,0});

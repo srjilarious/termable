@@ -119,6 +119,7 @@ namespace utf
     // Counts the number of bytes in a UTF-8 code point.  Returns nullopt 
     // If the given pointer points to invalid UTF-8 data.
     std::optional<uint8_t> numBytesInUtf8Char(const uint8_t* ch);
+    void writeUtf8Char(const uint8_t* ch);
 };
 
 class termableLinux : public termable
