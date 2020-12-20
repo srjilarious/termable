@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     
     for(int ii = 0; ii < 16; ii++) {
         for(int jj = 0; jj < 16; jj++) {
-            term.setForegroundColor(ii*16+jj);
+            term.setForegroundColor(static_cast<unsigned char>(ii*16+jj));
             printf("%s", u8"\u2589");
         }
         term.setBackgroundColor(termable::color::basic::Reset);
@@ -45,7 +45,7 @@ int main(int argc, char** argv)
     printf("\n");
     for(int ii = 0; ii < 16; ii++) {
         for(int jj = 0; jj < 16; jj++) {
-            term.setBackgroundColor(ii*16+jj);
+            term.setBackgroundColor(static_cast<unsigned char>(ii*16+jj));
             printf(" %03d ", ii*16+jj);
         }
         term.setBackgroundColor(termable::color::basic::Reset);
