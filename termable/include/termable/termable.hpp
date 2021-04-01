@@ -108,6 +108,8 @@ public:
     virtual void setBackgroundColor(termColor color) = 0;
     virtual void setForegroundColor(termColor color) = 0;
 
+    virtual void showCursor(bool show) = 0;
+
     virtual void renderBuffer(const termBuffer& buffer) = 0;
 
     // Render a buffer skipping over parts that are the same as the old buffer.
@@ -124,6 +126,9 @@ namespace utf
 
 class termableLinux : public termable
 {
+private:
+    bool mCursorHidden = false;
+    
 public:
     vec2i displaySize() const override;
 
@@ -141,6 +146,8 @@ public:
 
     void setBackgroundColor(termColor color) override;
     void setForegroundColor(termColor color) override;
+
+    void showCursor(bool show) override;
 
     void renderBuffer(const termBuffer& buffer) override;
     void renderBuffer(const termBuffer& currBuffer, const termBuffer& oldBuffer) override;

@@ -9,6 +9,7 @@
 int main(int argc, char** argv)
 {
     termable::termableLinux term;
+    term.showCursor(false);
     term.clear();
 
     auto sz = term.displaySize();    
@@ -48,5 +49,6 @@ int main(int argc, char** argv)
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
 
+    term.showCursor(true);
     return 0;
 }

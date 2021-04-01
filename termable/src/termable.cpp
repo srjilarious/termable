@@ -2,6 +2,8 @@
 
 #include <variant>
 #include <optional>
+
+#include <signal.h>
 #include <sys/ioctl.h> //ioctl() and TIOCGWINSZ
 #include <unistd.h> // for STDOUT_FILENO
 
@@ -9,6 +11,9 @@ namespace termable
 {
 namespace lin 
 {
+    constexpr const char HideCursor[]       = "\033[?25l";
+    constexpr const char ShowCursor[]       = "\033[?25h";
+
 namespace color
 {
     constexpr const char ResetColor[]   = "\033[0m";
@@ -396,6 +401,18 @@ void termableLinux::setForegroundColor(termColor color)
     }
 }
 
+void 
+termableLinux::showCursor(bool show)
+{
+    if(show) {
+        printf(lin::ShowCursor);
+        mCursorHidden = false;
+    }
+    else {
+        printf(lin::HideCursor);
+        mCursorHidden = true;
+    }
+}
 
 void 
 termableLinux::renderBuffer(const termBuffer& buffer)
