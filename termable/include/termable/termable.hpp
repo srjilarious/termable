@@ -100,15 +100,17 @@ enum class BufferRenderOption {
     Rerender,
 };
 
-// enum class NonAsciiChar
-// {
-//     Up,
-//     Down,
-//     Left,
-//     Right,
-//     Insert,
-//     Delete
-// };
+enum class NonAsciiChar
+{
+    Up,
+    Down,
+    Left,
+    Right,
+    Insert,
+    Delete
+};
+
+using KeyResult = std::variant<std::monostate, NonAsciiChar, char>;
 
 class termable
 {
@@ -133,7 +135,7 @@ public:
     virtual void setForegroundColor(termColor color) = 0;
 
     // Gets a character from the keyboard (turns off buffering if needed)
-    virtual char getch() = 0;
+    virtual KeyResult getch() = 0;
 
     virtual void showCursor(bool show) = 0;
 
@@ -180,8 +182,7 @@ public:
     void setForegroundColor(termColor color) override;
 
     // Gets a character from the keyboard (turns off buffering if needed)
-    // TODO: Change to a variant.
-    char getch() override;
+    KeyResult getch() override;
 
     void showCursor(bool show) override;
 

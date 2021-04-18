@@ -447,15 +447,29 @@ termableLinux::setInputBuffering(bool enabled)
         return false;
     }
 
-    // Disable echo and canonical terminal mode.
     if(enabled) {
-        tConf.c_lflag |= ICANON;
-        tConf.c_lflag |= ECHO;
+        tConf.c_iflag |= (IGNBRK | BRKINT | PARMRK | ISTRIP
+                        | INLCR | IXON);
+        //tConf.c_iflag &= ~(IGNCR | ICRNL);
+        tConf.c_oflag |= OPOST;
+        tConf.c_lflag |= (ECHO | ECHONL | ICANON | ISIG | IEXTEN);
+        tConf.c_cflag |= (CSIZE | PARENB);
+        tConf.c_cflag &= ~CS8;
+        // tConf.c_lflag |= ICANON;
+        // tConf.c_lflag |= ECHO;
     }
+    // Disable echo and canonical terminal mode.
     else {
-        tConf.c_lflag &= ~ICANON;
-        tConf.c_lflag &= ~ECHO;
-        tConf.c_cc[VMIN] = 1;
+        tConf.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP
+                        | INLCR | IXON);
+        //tConf.c_iflag |= (IGNCR | ICRNL);
+        tConf.c_oflag &= ~OPOST;
+        tConf.c_lflag &= ~(ECHO | ECHONL | ECHOCTL | ICANON | ISIG | IEXTEN);
+        tConf.c_cflag &= ~(CSIZE | PARENB);
+        tConf.c_cflag |= CS8;
+        // tConf.c_lflag &= ~ICANON;
+        // tConf.c_lflag &= ~ECHO;
+        tConf.c_cc[VMIN] = 0;
         tConf.c_cc[VTIME] = 0;
     }
 
@@ -467,19 +481,34 @@ termableLinux::setInputBuffering(bool enabled)
     return true;
 }
 
-char
+KeyResult
 termableLinux::getch() 
 {
     if(mBufferingEnabled) {
         setInputBuffering(false);
     }
 
-    char ch = 0;
-    if (read(0, &ch, 1) < 0) {
-        ch = -1;
+    KeyResult res = std::monostate{};
+    char ch[8] = {0};
+    if (read(0, &ch, 8) == 1) {
+        res = static_cast<char>(ch[0]);
+    }
+    else {
+        if(ch[0] == 27 && ch[1] == 91 && ch[2] == 65) {
+            res = NonAsciiChar::Up;
+        }
+        else if(ch[0] == 27 && ch[1] == 91 && ch[2] == 67) {
+            res = NonAsciiChar::Right;
+        }
+        else if(ch[0] == 27 && ch[1] == 91 && ch[2] == 68) {
+            res = NonAsciiChar::Left;
+        }
+        else if(ch[0] == 27 && ch[1] == 91 && ch[2] == 66) {
+            res = NonAsciiChar::Down;
+        }
     }
 
-    return ch;
+    return res;
 }
 
 void 
