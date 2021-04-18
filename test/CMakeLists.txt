@@ -32,3 +32,13 @@ target_link_libraries(
     double_buffer 
     termable
   )
+
+  add_executable(
+    mover
+    mover.cpp
+)
+
+target_link_libraries(
+    mover 
+    termable
+  )

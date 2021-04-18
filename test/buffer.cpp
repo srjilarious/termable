@@ -33,7 +33,7 @@ int main(int argc, char** argv)
     
     buffer.writeStr({2, 3}, u8"Grüss Gott!", termable::color::basic::BoldYellow, termable::color::basic::Blue);
     buffer.writeStr({1,4}, u8"\u00e4\u2308\u2309\u231b");
-    term.renderBuffer(buffer);
+    term.renderBuffer(buffer, termable::BufferRenderOption::Origin);
 
     return 0;
 }

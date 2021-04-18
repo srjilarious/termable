@@ -61,6 +61,8 @@ private:
 public:
     termBuffer(vec2i size);
 
+    void resize(vec2i size);
+
     vec2i size() const;
     const std::vector<termChar>& buffer() const;
 
@@ -88,9 +90,31 @@ enum ClearType : uint8_t {
     All = 2
 };
 
+enum class BufferRenderOption {
+    Origin,
+
+    // Render the buffer into the console not moving the 
+    Relative,
+
+    // Don't move the console cursor at all before rendering.
+    Rerender,
+};
+
+// enum class NonAsciiChar
+// {
+//     Up,
+//     Down,
+//     Left,
+//     Right,
+//     Insert,
+//     Delete
+// };
+
 class termable
 {
 public:
+    virtual ~termable() = default;
+
     virtual vec2i displaySize() const = 0;
     
     virtual void setCursorPos(vec2i pos) = 0;
@@ -108,9 +132,12 @@ public:
     virtual void setBackgroundColor(termColor color) = 0;
     virtual void setForegroundColor(termColor color) = 0;
 
+    // Gets a character from the keyboard (turns off buffering if needed)
+    virtual char getch() = 0;
+
     virtual void showCursor(bool show) = 0;
 
-    virtual void renderBuffer(const termBuffer& buffer) = 0;
+    virtual void renderBuffer(const termBuffer& buffer, BufferRenderOption option) = 0;
 
     // Render a buffer skipping over parts that are the same as the old buffer.
     virtual void renderBuffer(const termBuffer& currBuffer, const termBuffer& oldBuffer) = 0;
@@ -128,8 +155,13 @@ class termableLinux : public termable
 {
 private:
     bool mCursorHidden = false;
-    
+    bool mBufferingEnabled = true;
+
+    bool setInputBuffering(bool enabled);
+
 public:
+    ~termableLinux() override;
+
     vec2i displaySize() const override;
 
     void setCursorPos(vec2i pos) override;
@@ -147,9 +179,13 @@ public:
     void setBackgroundColor(termColor color) override;
     void setForegroundColor(termColor color) override;
 
+    // Gets a character from the keyboard (turns off buffering if needed)
+    // TODO: Change to a variant.
+    char getch() override;
+
     void showCursor(bool show) override;
 
-    void renderBuffer(const termBuffer& buffer) override;
+    void renderBuffer(const termBuffer& buffer, BufferRenderOption option) override;
     void renderBuffer(const termBuffer& currBuffer, const termBuffer& oldBuffer) override;
 };
 

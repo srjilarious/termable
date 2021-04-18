@@ -6,6 +6,7 @@
 #include <signal.h>
 #include <sys/ioctl.h> //ioctl() and TIOCGWINSZ
 #include <unistd.h> // for STDOUT_FILENO
+#include <termios.h>
 
 namespace termable
 {
@@ -128,10 +129,40 @@ writeUtf8Char(const uint8_t* ch)
 }
 
 }
+
 termBuffer::termBuffer(vec2i size) :
     mSize(size)
 {
     mBuffer.resize(size.x*size.y);
+}
+
+void 
+termBuffer::resize(vec2i size)
+{
+    auto oldBuffer = mBuffer;
+    mBuffer.resize(size.x*size.y);
+
+    std::size_t oldBuffIdx = 0;
+    std::size_t bufferIdx = 0;
+
+    for(int yy = 0; yy < mSize.y; yy++) {
+
+        for(int xx = 0; xx < mSize.x; xx++) {
+            mBuffer[bufferIdx] = oldBuffer[oldBuffIdx];
+            bufferIdx++;
+            oldBuffIdx++;
+        }
+
+        for(int xx = 0; xx < (size.x - mSize.x); xx++) {
+            mBuffer[bufferIdx++] = {};
+        }
+    }
+
+    for(int yy = 0; yy < (size.y - mSize.y); yy++) {
+        for(int xx = 0; xx < mSize.x; xx++) {
+            mBuffer[bufferIdx++] = {};
+        }
+    }
 }
 
 vec2i 
@@ -222,6 +253,13 @@ termableLinux::displaySize() const
     sx.x = size.ws_col;
     sx.y = size.ws_row;
     return sx;
+}
+
+termableLinux::~termableLinux()
+{
+    if(!mBufferingEnabled) {
+        setInputBuffering(true);
+    }
 }
 
 void
@@ -401,6 +439,49 @@ void termableLinux::setForegroundColor(termColor color)
     }
 }
 
+bool 
+termableLinux::setInputBuffering(bool enabled)
+{
+    termios tConf = {0};
+    if(tcgetattr(0, &tConf) < 0) {
+        return false;
+    }
+
+    // Disable echo and canonical terminal mode.
+    if(enabled) {
+        tConf.c_lflag |= ICANON;
+        tConf.c_lflag |= ECHO;
+    }
+    else {
+        tConf.c_lflag &= ~ICANON;
+        tConf.c_lflag &= ~ECHO;
+        tConf.c_cc[VMIN] = 1;
+        tConf.c_cc[VTIME] = 0;
+    }
+
+    if (tcsetattr(0, TCSADRAIN, &tConf) < 0) {
+        return false;
+    }
+
+    mBufferingEnabled = enabled;
+    return true;
+}
+
+char
+termableLinux::getch() 
+{
+    if(mBufferingEnabled) {
+        setInputBuffering(false);
+    }
+
+    char ch = 0;
+    if (read(0, &ch, 1) < 0) {
+        ch = -1;
+    }
+
+    return ch;
+}
+
 void 
 termableLinux::showCursor(bool show)
 {
@@ -415,10 +496,15 @@ termableLinux::showCursor(bool show)
 }
 
 void 
-termableLinux::renderBuffer(const termBuffer& buffer)
+termableLinux::renderBuffer(const termBuffer& buffer, BufferRenderOption option)
 {
-    // Move to start location
-    setCursorPos({0,0});
+    if(option == BufferRenderOption::Origin) {
+        // Move to start location
+        setCursorPos({0,0});
+    }
+    else if(option == BufferRenderOption::Relative) {
+        moveUp(buffer.size().y);
+    }
 
     // Rest color
     printf(lin::color::ResetColor);
