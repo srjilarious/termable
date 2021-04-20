@@ -37,7 +37,24 @@ int main(int argc, char** argv)
                 case termable::NonAsciiChar::Right:
                     printf("!Right! ");
                     break;
-                
+                case termable::NonAsciiChar::Home:
+                    printf("!Home! ");
+                    break;
+                case termable::NonAsciiChar::End:
+                    printf("!End! ");
+                    break;
+                case termable::NonAsciiChar::PageUp:
+                    printf("!PageUp! ");
+                    break;
+                case termable::NonAsciiChar::PageDown:
+                    printf("!PageDown! ");
+                    break;
+                case termable::NonAsciiChar::Delete:
+                    printf("!Delete! ");
+                    break;
+                case termable::NonAsciiChar::Insert:
+                    printf("!Insert! ");
+                    break;
             }
             fflush(stdout);
         }

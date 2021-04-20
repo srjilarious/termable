@@ -490,21 +490,59 @@ termableLinux::getch()
 
     KeyResult res = std::monostate{};
     char ch[8] = {0};
-    if (read(0, &ch, 8) == 1) {
+    int numRead = read(0, &ch, 8);
+    if(numRead == 0) {
+        return res;
+    }
+    if (numRead == 1) {
         res = static_cast<char>(ch[0]);
     }
     else {
-        if(ch[0] == 27 && ch[1] == 91 && ch[2] == 65) {
-            res = NonAsciiChar::Up;
-        }
-        else if(ch[0] == 27 && ch[1] == 91 && ch[2] == 67) {
-            res = NonAsciiChar::Right;
-        }
-        else if(ch[0] == 27 && ch[1] == 91 && ch[2] == 68) {
-            res = NonAsciiChar::Left;
-        }
-        else if(ch[0] == 27 && ch[1] == 91 && ch[2] == 66) {
-            res = NonAsciiChar::Down;
+        // printf("Read(%d): ", numRead);
+        // for(int i = 0; i < numRead; i++) {
+        //     printf("%d, ", ch[i]);
+        // }
+        // printf("\n");
+        // fflush(stdout);
+
+        if(numRead > 2 && ch[0] == 27 && ch[1] == 91)
+        {
+            if(numRead == 3)
+            {
+                if(ch[2] == 65) {
+                    res = NonAsciiChar::Up;
+                }
+                else if(ch[2] == 67) {
+                    res = NonAsciiChar::Right;
+                }
+                else if(ch[2] == 68) {
+                    res = NonAsciiChar::Left;
+                }
+                else if(ch[2] == 66) {
+                    res = NonAsciiChar::Down;
+                }
+                else if(ch[2] == 72) {
+                    res = NonAsciiChar::Home;
+                }
+                else if(ch[2] == 70) {
+                    res = NonAsciiChar::End;
+                }
+            }
+            else if(numRead == 4 && ch[3] == 126)
+            {
+                if(ch[2] == 51) {
+                    res = NonAsciiChar::Delete;
+                }
+                else if(ch[2] == 50) {
+                    res = NonAsciiChar::Insert;
+                }
+                else if(ch[2] == 53) {
+                    res = NonAsciiChar::PageUp;
+                }
+                else if(ch[2] == 54) {
+                    res = NonAsciiChar::PageDown;
+                }
+            }
         }
     }
 

@@ -107,7 +107,11 @@ enum class NonAsciiChar
     Left,
     Right,
     Insert,
-    Delete
+    Delete,
+    PageUp,
+    PageDown,
+    Home,
+    End
 };
 
 using KeyResult = std::variant<std::monostate, NonAsciiChar, char>;
