@@ -61,6 +61,6 @@ int main(int argc, char** argv)
         }
 
     }
-    term.showCursor(false);
+    term.showCursor(true);
     return 0;
 }
