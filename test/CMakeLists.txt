@@ -33,7 +33,7 @@ target_link_libraries(
     termable
   )
 
-  add_executable(
+add_executable(
     mover
     mover.cpp
 )
@@ -41,4 +41,14 @@ target_link_libraries(
 target_link_libraries(
     mover 
     termable
-  )
+)
+
+add_executable(
+    kb_test
+    kb_test.cpp
+)
+
+target_link_libraries(
+    kb_test
+    termable
+)
