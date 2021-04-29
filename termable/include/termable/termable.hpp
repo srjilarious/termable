@@ -44,7 +44,30 @@ struct vec2i {
 };
 
 using termColor = std::variant<color::basic, uint8_t>;
-using utf8Char = std::array<uint8_t, 4>;
+// using utf8Char = std::array<uint8_t, 4>;
+
+struct utf8Char
+{
+    utf8Char();
+    utf8Char(const utf8Char& other);
+    utf8Char(const char u8Ch[]);
+    utf8Char(std::initializer_list<int>u8Ch);
+    utf8Char(char c);
+    utf8Char(utf8Char&& other);
+    ~utf8Char() = default;
+    
+    utf8Char& operator=(const utf8Char& other);
+    utf8Char& operator=(utf8Char&& other);
+    friend bool operator== (const utf8Char &c1, const utf8Char &c2);  
+    friend bool operator!= (const utf8Char &c1, const utf8Char &c2);
+    std::size_t numBytes;
+    std::array<char, 4> values;
+
+    // Counts the number of bytes in a UTF-8 code point.  Returns nullopt 
+    // If the given pointer points to invalid UTF-8 data.
+    std::optional<uint8_t> checkNumBytes(const char* ch);
+    void write() const;
+};
 
 struct termChar
 {
@@ -151,10 +174,7 @@ public:
 
 namespace utf
 {
-    // Counts the number of bytes in a UTF-8 code point.  Returns nullopt 
-    // If the given pointer points to invalid UTF-8 data.
-    std::optional<uint8_t> numBytesInUtf8Char(const uint8_t* ch);
-    void writeUtf8Char(const uint8_t* ch);
+    
 };
 
 class termableLinux : public termable

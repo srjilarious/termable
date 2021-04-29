@@ -71,12 +71,82 @@ namespace background
 }
 }
 
-
-namespace utf
+utf8Char::utf8Char()
+    : numBytes(0),
+      values{0}
 {
 
+}
+
+utf8Char::utf8Char(const utf8Char& other)
+    : numBytes(other.numBytes),
+      values(other.values)
+{
+
+}
+
+utf8Char::utf8Char(std::initializer_list<int> u8Ch)
+    : utf8Char(reinterpret_cast<const char*>(std::data(u8Ch)))
+{
+}
+
+utf8Char::utf8Char(const char u8Ch[])
+{
+    auto checkOpt = checkNumBytes(u8Ch);
+    if(checkOpt.has_value()) {
+        numBytes = checkOpt.value();
+        if(numBytes == 1) {
+            values[0] = u8Ch[0];
+            for(int ii = 1; ii < 4; ii++) values[ii] = 0;
+        }
+        else if(numBytes == 2) {
+            for(int ii = 0; ii < 2; ii++) values[ii] = u8Ch[ii];
+            for(int ii = 2; ii < 4; ii++) values[ii] = 0;
+        }
+        else if(numBytes == 3) {
+            for(int ii = 0; ii < 3; ii++) values[ii] = u8Ch[ii];
+            values[3] = 0;
+        }
+        else if(numBytes == 4) {
+            for(int ii = 0; ii < 4; ii++) values[ii] = u8Ch[ii];
+        }
+    }
+    else {
+        numBytes = 0;
+        values = {0};
+    }
+}
+
+utf8Char::utf8Char(char c)
+    : numBytes(1),
+      values{c, 0, 0, 0}
+{
+
+}
+
+utf8Char::utf8Char(utf8Char&& other)
+    : numBytes(other.numBytes),
+      values(other.values)
+{
+}
+
+utf8Char& utf8Char::operator=(const utf8Char& other)
+{
+    this->numBytes = other.numBytes;
+    this->values = other.values;
+    return *this;
+}
+
+utf8Char& utf8Char::operator=(utf8Char&& other)
+{
+    this->numBytes = other.numBytes;
+    this->values = std::move(other.values);
+    return *this;
+}
+
+
 std::optional<uint8_t> 
-numBytesInUtf8Char(const uint8_t* ch)
+utf8Char::checkNumBytes(const char* ch)
 {
     // Check for single byte UTF-8
     if((*ch & 0x80) == 0x00) {
@@ -100,26 +170,38 @@ numBytesInUtf8Char(const uint8_t* ch)
     }
 }
 
-void 
-writeUtf8Char(const uint8_t* ch)
+bool operator== (const utf8Char &c1, const utf8Char &c2)
 {
-    auto utfByteCountOpt = utf::numBytesInUtf8Char(ch);
+    return (c1.numBytes == c2.numBytes &&
+            c1.values[0] == c2.values[0] &&
+            c1.values[1] == c2.values[1] &&
+            c1.values[2] == c2.values[2] &&
+            c1.values[3] == c2.values[3]);
+}
+ 
+bool operator!= (const utf8Char &c1, const utf8Char &c2)
+{
+    return (c1.numBytes != c2.numBytes ||
+            c1.values[0] != c2.values[0] ||
+            c1.values[1] != c2.values[1] ||
+            c1.values[2] != c2.values[2] ||
+            c1.values[3] != c2.values[3]);
+}
 
-    if(utfByteCountOpt.has_value())
-    {
-        auto byteCount = utfByteCountOpt.value();
-        if(byteCount == 1) {
-            printf("%c", ch[0]);
-        }
-        else if(byteCount == 2) {
-            printf("%c%c", ch[0], ch[1]);
-        }
-        else if(byteCount == 3) {
-            printf("%c%c%c", ch[0], ch[1], ch[2]);
-        }
-        else if(byteCount == 4) {
-            printf("%c%c%c%c", ch[0], ch[1], ch[2], ch[3]);
-        }
+void 
+utf8Char::write() const
+{
+    if(numBytes == 1) {
+        printf("%c", values[0]);
+    }
+    else if(numBytes == 2) {
+        printf("%c%c", values[0], values[1]);
+    }
+    else if(numBytes == 3) {
+        printf("%c%c%c", values[0], values[1], values[2]);
+    }
+    else if(numBytes == 4) {
+        printf("%c%c%c%c", values[0], values[1], values[2], values[3]);
     }
     else 
     {
@@ -128,7 +210,6 @@ writeUtf8Char(const uint8_t* ch)
     }
 }
 
-}
 
 termBuffer::termBuffer(vec2i size) :
     mSize(size)
@@ -195,30 +276,13 @@ termBuffer::writeStr(
         termColor back)
 {
     int written = 0;
-    const uint8_t* ch = reinterpret_cast<const uint8_t*>(str.data());
+    const char* ch = str.data();
     auto bufferOffset = pos.y*mSize.x+pos.x;
     while(*ch != '\0') {
-        auto numBytesOpt = utf::numBytesInUtf8Char(ch);
-        if(numBytesOpt.has_value()) {
-            auto numBytes = numBytesOpt.value();
-            if(numBytes == 1) {
-                mBuffer[bufferOffset] = {{ch[0], 0, 0, 0}, fore, back};
-            }
-            else if(numBytes == 2) {
-                mBuffer[bufferOffset] = {{ch[0], ch[1], 0, 0}, fore, back};
-            }
-            else if(numBytes == 3) {
-                mBuffer[bufferOffset] = {{ch[0], ch[1], ch[2], 0}, fore, back};
-            }
-            else if(numBytes == 4) {
-                mBuffer[bufferOffset] = {{ch[0], ch[1], ch[2], ch[3]}, fore, back};
-            }
-            else {
-                // Error, so bail out.
-                return written;
-            }
-
-            ch+= numBytes;
+        auto uch = utf8Char(ch);
+        if(uch.numBytes > 0) {
+            mBuffer[bufferOffset] = {uch, fore, back};
+            ch+= uch.numBytes;
             bufferOffset++;
             written++;
         }
@@ -592,7 +656,7 @@ termableLinux::renderBuffer(const termBuffer& buffer, BufferRenderOption option)
             setForegroundColor(tChar.foregroundColor);
 
             // Write out character
-            utf::writeUtf8Char(tChar.val.data());
+            tChar.val.write();
         }
 
         printf("\n");
@@ -631,7 +695,7 @@ termableLinux::renderBuffer(
                 // Check color and change if needed
                 setBackgroundColor(newCh.backgroundColor);
                 setForegroundColor(newCh.foregroundColor);
-                utf::writeUtf8Char(newCh.val.data());
+                newCh.val.write();
             }
 
             buffAddr++;
