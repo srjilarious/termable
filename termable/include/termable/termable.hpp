@@ -105,6 +105,13 @@ public:
     void fill(utf8Char c,
                 termColor fore = color::basic::Reset, 
                 termColor back = color::basic::Reset);
+
+    void horzLine(utf8Char c, vec2i start, int len,
+            termColor fore = color::basic::Reset, 
+            termColor back = color::basic::Reset);
+    void vertLine(utf8Char c, vec2i start, int len,
+            termColor fore = color::basic::Reset, 
+            termColor back = color::basic::Reset);
 };
 
 enum ClearType : uint8_t {

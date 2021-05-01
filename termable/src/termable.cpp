@@ -307,6 +307,74 @@ termBuffer::fill(
     }
 }
 
+void 
+termBuffer::horzLine(
+        utf8Char c, 
+        vec2i start, 
+        int len,
+        termColor fore, 
+        termColor back)
+{
+    if(start.y < 0 || start.y >= mSize.y) return;
+
+    // Handle negative lengths by changing starting point
+    // to have a positively moving line.
+    if(len < 0) {
+        start.x = start.x - len;
+        len = -len;
+    }
+
+
+    if(start.x < 0) {
+        len += start.x;
+        start.x = 0;
+    }
+    else if(start.x+len > mSize.x) {
+        len = mSize.x-start.x;
+    }
+
+    std::size_t pos = start.y*mSize.x + start.x;
+    termChar tc = {c, fore, back};
+    for(std::size_t ii = 0; ii < len; ii++) {
+        mBuffer[pos] = tc;
+        pos++;
+    }
+}
+
+void 
+termBuffer::vertLine(
+        utf8Char c, 
+        vec2i start, 
+        int len,
+        termColor fore, 
+        termColor back)
+{
+    if(start.x < 0 || start.x >= mSize.x) return;
+
+    // Handle negative lengths by changing starting point
+    // to have a positively moving line.
+    if(len < 0) {
+        start.y = start.y - len;
+        len = -len;
+    }
+    
+
+    if(start.y < 0) {
+        len += start.y;
+        start.y = 0;
+    }
+    else if(start.y+len > mSize.y) {
+        len = mSize.y-start.y;
+    }
+
+    std::size_t pos = start.y*mSize.x + start.x;
+    termChar tc = {c, fore, back};
+    for(std::size_t ii = 0; ii < len; ii++) {
+        mBuffer[pos] = tc;
+        pos+= mSize.x;
+    }
+}
+
 vec2i 
 termableLinux::displaySize() const
 {

@@ -74,11 +74,21 @@ int main(int argc, char** argv)
 
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
     term.setCursorPos({0,0});
-    for(int jj = 0; jj < sz.x; jj++) printf(u8"\u2589");
-    printf("\n");
-    for(int yy = 0; yy < sz.y-2; yy++) {
-        printf("%s%s%s\n", u8"\u2589", std::string(sz.x-2, ' ').c_str(), u8"\u2589");
-    }
-    for(int jj = 0; jj < sz.x; jj++) printf(u8"\u2589");
-    printf("\n");
+    
+
+    auto termBuf = termable::termBuffer(sz);
+    termBuf.fill(' ');
+    termBuf.horzLine(termable::utf8Char(u8"\u2589"), {0,0}, sz.x);
+    termBuf.horzLine(termable::utf8Char(u8"\u2589"), {0,sz.y-1}, sz.x);
+    termBuf.vertLine(termable::utf8Char(u8"\u2589"), {0,1}, sz.y-2);
+    termBuf.vertLine(termable::utf8Char(u8"\u2589"), {sz.x-1,1}, sz.y-2);
+    term.renderBuffer(termBuf, termable::BufferRenderOption::Origin);
+    // for(int jj = 0; jj < sz.x; jj++) printf(u8"\u2589");
+    // printf("\n");
+    // for(int yy = 0; yy < sz.y-2; yy++) {
+    //     printf("%s%s%s\n", u8"\u2589", std::string(sz.x-2, ' ').c_str(), u8"\u2589");
+    // }
+    // for(int jj = 0; jj < sz.x; jj++) printf(u8"\u2589");
+    // printf("\n");
+    term.showCursor(true);
 }
