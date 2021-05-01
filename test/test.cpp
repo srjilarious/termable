@@ -83,6 +83,11 @@ int main(int argc, char** argv)
     termBuf.vertLine(termable::utf8Char(u8"\u2589"), {0,1}, sz.y-2);
     termBuf.vertLine(termable::utf8Char(u8"\u2589"), {sz.x-1,1}, sz.y-2);
     term.renderBuffer(termBuf, termable::BufferRenderOption::Origin);
+
+    termBuf.filledRect(termable::utf8Char('@'), {2, 2}, {30, 50});
+    termBuf.filledRect(termable::utf8Char('.'), {6, 7}, {40, 20});
+    
+    term.renderBuffer(termBuf, termable::BufferRenderOption::Origin);
     // for(int jj = 0; jj < sz.x; jj++) printf(u8"\u2589");
     // printf("\n");
     // for(int yy = 0; yy < sz.y-2; yy++) {

@@ -112,6 +112,9 @@ public:
     void vertLine(utf8Char c, vec2i start, int len,
             termColor fore = color::basic::Reset, 
             termColor back = color::basic::Reset);
+    void filledRect(utf8Char c, vec2i start, vec2i end,
+            termColor fore = color::basic::Reset, 
+            termColor back = color::basic::Reset);
 };
 
 enum ClearType : uint8_t {

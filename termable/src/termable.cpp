@@ -375,6 +375,37 @@ termBuffer::vertLine(
     }
 }
 
+
+void 
+termBuffer::filledRect(
+        utf8Char c, 
+        vec2i start, 
+        vec2i end,
+        termColor fore, 
+        termColor back)
+{
+    if(start.x > end.x) std::swap(start.x, end.x);
+    if(start.y > end.y) std::swap(start.y, end.y);
+    start.x = std::clamp(start.x, 0, mSize.x-1);
+    start.y = std::clamp(start.y, 0, mSize.y-1);
+    end.x = std::clamp(end.x, 0, mSize.x-1);
+    end.y = std::clamp(end.y, 0, mSize.y-1);
+
+    std::size_t pos = start.y*mSize.x + start.x;
+    std::size_t lineLen = end.x-start.x;
+    std::size_t numLines = end.y-start.y;
+    termChar tc = {c, fore, back};
+    for(std::size_t yy = 0; yy < numLines; yy++)
+    {
+        for(std::size_t xx = 0; xx < lineLen; xx++) {
+            mBuffer[pos] = tc;
+            if(pos >= mSize.x*mSize.y) break;
+            pos++;
+        }
+        pos += mSize.x-lineLen;
+    }
+}
+
 vec2i 
 termableLinux::displaySize() const
 {
