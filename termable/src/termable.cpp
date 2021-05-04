@@ -796,13 +796,18 @@ termableLinux::renderBuffer(
                oldCh.backgroundColor != newCh.backgroundColor ||
                oldCh.foregroundColor != newCh.foregroundColor) {
                 if(lastX != xx) {
+                    // TODO: Fix to handle relative offset drawing.
                     setCursorPos({xx, yy});
                     lastX = xx;
                 }
                 
                 // Check color and change if needed
-                setBackgroundColor(newCh.backgroundColor);
-                setForegroundColor(newCh.foregroundColor);
+                if(oldCh.backgroundColor != newCh.backgroundColor) {
+                    setBackgroundColor(newCh.backgroundColor);
+                }
+                if(oldCh.foregroundColor != newCh.foregroundColor) {
+                    setForegroundColor(newCh.foregroundColor);
+                }
                 newCh.val.write();
             }
 
