@@ -44,6 +44,15 @@ target_link_libraries(
 )
 
 add_executable(
+    menu_test
+    menu_test.cpp
+)
+
+target_link_libraries(
+    menu_test
+    termable
+)
+add_executable(
     kb_test
     kb_test.cpp
 )

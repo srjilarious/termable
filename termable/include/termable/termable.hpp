@@ -179,7 +179,10 @@ public:
     virtual void renderBuffer(const termBuffer& buffer, BufferRenderOption option) = 0;
 
     // Render a buffer skipping over parts that are the same as the old buffer.
-    virtual void renderBuffer(const termBuffer& currBuffer, const termBuffer& oldBuffer) = 0;
+    virtual void renderBuffer(
+            const termBuffer& currBuffer, 
+            const termBuffer& oldBuffer, 
+            BufferRenderOption option=BufferRenderOption::Origin) = 0;
 };
 
 namespace utf
@@ -221,7 +224,10 @@ public:
     void showCursor(bool show) override;
 
     void renderBuffer(const termBuffer& buffer, BufferRenderOption option) override;
-    void renderBuffer(const termBuffer& currBuffer, const termBuffer& oldBuffer) override;
+    void renderBuffer(
+            const termBuffer& currBuffer, 
+            const termBuffer& oldBuffer,
+            BufferRenderOption option=BufferRenderOption::Origin) override;
 };
 
 }

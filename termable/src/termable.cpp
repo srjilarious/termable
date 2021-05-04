@@ -733,7 +733,7 @@ termableLinux::renderBuffer(const termBuffer& buffer, BufferRenderOption option)
         setCursorPos({0,0});
     }
     else if(option == BufferRenderOption::Relative) {
-        moveUp(buffer.size().y);
+        moveUpLine(buffer.size().y);
     }
 
     // Rest color
@@ -769,9 +769,18 @@ termableLinux::renderBuffer(const termBuffer& buffer, BufferRenderOption option)
 void 
 termableLinux::renderBuffer(
         const termBuffer& currBuffer, 
-        const termBuffer& oldBuffer
+        const termBuffer& oldBuffer,
+        BufferRenderOption option
     )
 {
+    if(option == BufferRenderOption::Origin) {
+        // Move to start location
+        setCursorPos({0,0});
+    }
+    else if(option == BufferRenderOption::Relative) {
+        moveUpLine(oldBuffer.size().y);
+    }
+
     auto oldSize = oldBuffer.size();
 
     // Render each row of the buffer
@@ -783,9 +792,9 @@ termableLinux::renderBuffer(
         for(int xx = 0; xx < buffSize.x; xx++) {
             const auto& oldCh = oldBuffer.buffer()[buffAddr];
             const auto& newCh = currBuffer.buffer()[buffAddr];
-            if(oldCh.val != newCh.val /*||
+            if(oldCh.val != newCh.val ||
                oldCh.backgroundColor != newCh.backgroundColor ||
-               oldCh.foregroundColor != newCh.foregroundColor*/) {
+               oldCh.foregroundColor != newCh.foregroundColor) {
                 if(lastX != xx) {
                     setCursorPos({xx, yy});
                     lastX = xx;
