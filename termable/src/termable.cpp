@@ -459,13 +459,13 @@ termableLinux::moveRight(uint32_t amount)
 void 
 termableLinux::moveUpLine(uint32_t amount)
 {
-    printf("\u001b[%uE", amount);
+    printf("\u001b[%uF", amount);
 }
 
 void 
 termableLinux::moveDownLine(uint32_t amount)
 {
-    printf("\u001b[%uF", amount);
+    printf("\u001b[%uE", amount);
 }
 
 void 
@@ -786,19 +786,28 @@ termableLinux::renderBuffer(
     // Render each row of the buffer
     auto buffSize = currBuffer.size();
     size_t buffAddr = 0;
+    int yLag = 0;
+    int xLag = 0;
     for(int yy = 0; yy < buffSize.y; yy++) 
     {
-        int lastX = -1;
+        xLag = 0;
+        bool drewChar = false;
         for(int xx = 0; xx < buffSize.x; xx++) {
             const auto& oldCh = oldBuffer.buffer()[buffAddr];
             const auto& newCh = currBuffer.buffer()[buffAddr];
             if(oldCh.val != newCh.val ||
                oldCh.backgroundColor != newCh.backgroundColor ||
                oldCh.foregroundColor != newCh.foregroundColor) {
-                if(lastX != xx) {
-                    // TODO: Fix to handle relative offset drawing.
-                    setCursorPos({xx, yy});
-                    lastX = xx;
+                drewChar = true;
+                // if(yLag != 0) {
+                //     moveDownLine(yLag);
+                //     yLag = 0;
+                //     //xLag+=xx;
+                // }
+
+                if(xLag != 0) {
+                    moveRight(xLag);
+                    xLag = 0;
                 }
                 
                 // Check color and change if needed
@@ -810,14 +819,35 @@ termableLinux::renderBuffer(
                 }
                 newCh.val.write();
             }
+            else {
+                xLag++;
+            }
 
             buffAddr++;
         }
 
+        if(yy < buffSize.y-1)
+            printf("\r\n");
+        // if(!drewChar) {
+        //     yLag++;
+        // }
         //buffAddr++;
     }
 
-    setCursorPos(currBuffer.size());
+    if(option == BufferRenderOption::Origin) {
+        setCursorPos(currBuffer.size());
+    }
+
+    // if(yLag != 0) {
+    //     moveDownLine(yLag);
+    //     yLag = 0;
+    //     xLag=currBuffer.size().x;
+    // }
+
+    if(xLag != 0) {
+        moveRight(xLag);
+    }
+
     setBackgroundColor( color::basic::Reset);
     setForegroundColor( color::basic::Reset);
 }
