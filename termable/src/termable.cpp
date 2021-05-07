@@ -778,11 +778,12 @@ termableLinux::renderBuffer(
         setCursorPos({0,0});
     }
     else if(option == BufferRenderOption::Relative) {
-        moveUpLine(oldBuffer.size().y);
+        moveUpLine(oldBuffer.size().y-1);
     }
 
     auto oldSize = oldBuffer.size();
-
+    auto oldBg = oldBuffer.buffer()[0].backgroundColor;
+    auto oldFg = oldBuffer.buffer()[0].foregroundColor;
     // Render each row of the buffer
     auto buffSize = currBuffer.size();
     size_t buffAddr = 0;
@@ -811,11 +812,13 @@ termableLinux::renderBuffer(
                 }
                 
                 // Check color and change if needed
-                if(oldCh.backgroundColor != newCh.backgroundColor) {
+                if(newCh.backgroundColor != oldBg) {
                     setBackgroundColor(newCh.backgroundColor);
+                    oldBg = newCh.backgroundColor;
                 }
-                if(oldCh.foregroundColor != newCh.foregroundColor) {
+                if(newCh.foregroundColor != oldFg) {
                     setForegroundColor(newCh.foregroundColor);
+                    oldFg = newCh.foregroundColor;
                 }
                 newCh.val.write();
             }
@@ -826,8 +829,10 @@ termableLinux::renderBuffer(
             buffAddr++;
         }
 
-        if(yy < buffSize.y-1)
+        if(yy < buffSize.y-1) {
             printf("\r\n");
+        }
+
         // if(!drewChar) {
         //     yLag++;
         // }
