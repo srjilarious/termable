@@ -12,7 +12,8 @@ int main(int argc, char** argv)
     termable::termableLinux term;
     term.showCursor(false);
  
-    termable::termBuffer buffer1({40, 3}), buffer2({40, 3});
+    auto sz = term.displaySize();
+    termable::termBuffer buffer1({sz.x, 3}), buffer2({sz.x, 3});
     buffer1.fill({' '}, termable::color::basic::White, termable::color::basic::Black);
     buffer2.fill({'.'}, termable::color::basic::White, termable::color::basic::Black);
 
@@ -38,7 +39,7 @@ int main(int argc, char** argv)
     while(!menu.handleInput(c)) {
         if(std::holds_alternative<std::monostate>(c))
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
         }
         else {
             menu.render(*currBuffer);
@@ -52,6 +53,7 @@ int main(int argc, char** argv)
         c = term.getch();
     }
     
+    term.doneRendering(*currBuffer, termable::BufferRenderOption::Relative);
     term.showCursor(true);
     return 0;
 }

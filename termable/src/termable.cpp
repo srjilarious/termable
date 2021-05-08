@@ -767,6 +767,39 @@ termableLinux::renderBuffer(const termBuffer& buffer, BufferRenderOption option)
 
 
 void 
+termableLinux::doneRendering(
+        const termBuffer& buffer, 
+        BufferRenderOption option
+    )
+{
+    if(option == BufferRenderOption::Origin) {
+        // Move to start location
+        setCursorPos({0,0});
+    }
+    else if(option == BufferRenderOption::Relative) {
+        moveUpLine(buffer.size().y-1);
+    }
+
+    setBackgroundColor(color::basic::Reset);
+    setForegroundColor(color::basic::Reset);
+    for(int yy = 0; yy < buffer.size().y; yy++) 
+    {
+        for(int xx = 0; xx < buffer.size().x; xx++) 
+        {
+            printf(" ");
+        }
+    }
+
+    if(option == BufferRenderOption::Origin) {
+        // Move to start location
+        setCursorPos({0,0});
+    }
+    else if(option == BufferRenderOption::Relative) {
+        moveUpLine(buffer.size().y-1);
+    }
+}
+
+void 
 termableLinux::renderBuffer(
         const termBuffer& currBuffer, 
         const termBuffer& oldBuffer,

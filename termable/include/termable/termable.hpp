@@ -176,6 +176,9 @@ public:
 
     virtual void showCursor(bool show) = 0;
 
+    // clears the screen of buffer contents and resets the cursor position
+    virtual void doneRendering(const termBuffer& buffer, BufferRenderOption option) = 0;
+
     virtual void renderBuffer(const termBuffer& buffer, BufferRenderOption option) = 0;
 
     // Render a buffer skipping over parts that are the same as the old buffer.
@@ -223,6 +226,7 @@ public:
 
     void showCursor(bool show) override;
 
+    void doneRendering(const termBuffer& buffer, BufferRenderOption option) override;
     void renderBuffer(const termBuffer& buffer, BufferRenderOption option) override;
     void renderBuffer(
             const termBuffer& currBuffer, 
