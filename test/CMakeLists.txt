@@ -51,6 +51,7 @@ add_executable(
 target_link_libraries(
     menu_test
     termable
+    termable_ui
 )
 add_executable(
     kb_test
