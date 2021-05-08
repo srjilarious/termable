@@ -39,7 +39,10 @@ InlineMenuView::handleInput(KeyResult c)
 {
     if(std::holds_alternative<char>(c)) {
         auto ch = std::get<char>(c);
-        if(ch == 'q') {
+        if(ch == 'q' || ch == '\033') {
+            return true;
+        }
+        else if(ch == '\n') {
             return true;
         }
     }
