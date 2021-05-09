@@ -101,6 +101,13 @@ public:
                 std::string str, 
                 termColor fore = color::basic::Reset, 
                 termColor back = color::basic::Reset);
+    
+    // Writes out a UTF-8 string into the buffer, returning the 
+    // number of codepoints written out.
+    int writeCheckedStr(vec2i pos, 
+                std::string str, 
+                termColor fore = color::basic::Reset, 
+                termColor back = color::basic::Reset);
 
     void fill(utf8Char c,
                 termColor fore = color::basic::Reset, 

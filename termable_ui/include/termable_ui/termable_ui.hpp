@@ -35,6 +35,24 @@ public:
     void render(termBuffer& buffer);
 };
 
+class FullMenuView 
+{
+private:
+    MenuModel& mModel;
+    vec2i mSize;
+
+    void writeStr(
+        termBuffer& buff, 
+        vec2i pos, 
+        std::string value, 
+        bool selected);
+        
+public:
+    FullMenuView(MenuModel& model, vec2i size);
+    bool handleInput(KeyResult c);
+    void render(termBuffer& buffer);
+};
+
 }
 
 }
