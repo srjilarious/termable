@@ -865,8 +865,11 @@ termableLinux::renderBuffer(
             const auto& oldCh = oldBuffer.buffer()[buffAddr];
             const auto& newCh = currBuffer.buffer()[buffAddr];
             if(oldCh.val != newCh.val ||
+            //    oldBg != newCh.backgroundColor ||
+            //    oldFg != newCh.foregroundColor) 
                oldCh.backgroundColor != newCh.backgroundColor ||
-               oldCh.foregroundColor != newCh.foregroundColor) {
+               oldCh.foregroundColor != newCh.foregroundColor) 
+            {
                 drewChar = true;
                 // if(yLag != 0) {
                 //     moveDownLine(yLag);
@@ -880,14 +883,14 @@ termableLinux::renderBuffer(
                 }
                 
                 // Check color and change if needed
-                if(newCh.backgroundColor != oldBg) {
+                //if(newCh.backgroundColor != oldBg) {
                     setBackgroundColor(newCh.backgroundColor);
                     oldBg = newCh.backgroundColor;
-                }
-                if(newCh.foregroundColor != oldFg) {
+                //}
+                //if(newCh.foregroundColor != oldFg) {
                     setForegroundColor(newCh.foregroundColor);
                     oldFg = newCh.foregroundColor;
-                }
+                //}
                 newCh.val.write();
             }
             else {

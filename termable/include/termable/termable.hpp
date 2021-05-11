@@ -15,7 +15,7 @@ namespace termable
 
 namespace color
 {
-    enum class basic 
+    enum class basic : uint16_t
     {
         Reset,
         Black,

@@ -90,6 +90,9 @@ FullMenuView::writeStr(
         std::string value, 
         bool selected)
 {
+    // 10 padding, 4 for selection portion
+    auto amountLeft = mSize.x-10-4; 
+    auto amountStr = std::string(amountLeft-value.size(), ' ');
     if(selected)
     {
         buff.writeCheckedStr(pos, "[", color::basic::BoldYellow, color::basic::Red);
@@ -98,10 +101,10 @@ FullMenuView::writeStr(
         pos.x++;
         buff.writeCheckedStr(pos, "] ", color::basic::BoldYellow, color::basic::Red);
         pos.x+=2;
-        buff.writeCheckedStr(pos, value, color::basic::BoldWhite, color::basic::Red);
+        buff.writeCheckedStr(pos, value + amountStr, color::basic::BoldWhite, color::basic::Red);
     }
     else {
-        buff.writeCheckedStr(pos, "[ ] " + value, color::basic::White);
+        buff.writeCheckedStr(pos, "[ ] " + value + amountStr, color::basic::Black, color::basic::White);
     }
 }
 
@@ -142,7 +145,7 @@ FullMenuView::render(termBuffer& buffer)
     buffer.filledRect(' ', 
             {padding.x, padding.y}, {mSize.x-padding.x, mSize.y-padding.y},
             color::basic::White, 
-            color::basic::Gray);
+            color::basic::White);
     vec2i textStart = {padding.x+2, padding.y+2};
     for(size_t ii = 0; ii < mModel.options.size(); ii++) {
         writeStr(

@@ -21,6 +21,7 @@ int main(int argc, char** argv)
     model.selection = 0;
 
     auto sz = term.displaySize();
+
     termable::termBuffer buffer1(sz), buffer2(sz);
     buffer1.fill({' '}, termable::color::basic::White, termable::color::basic::Black);
     buffer2.fill({'.'}, termable::color::basic::White, termable::color::basic::Black);
