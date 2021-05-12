@@ -852,6 +852,8 @@ termableLinux::renderBuffer(
     auto oldSize = oldBuffer.size();
     auto oldBg = oldBuffer.buffer()[0].backgroundColor;
     auto oldFg = oldBuffer.buffer()[0].foregroundColor;
+    auto lastBg = oldBg;
+    auto lastFg = oldFg;
     // Render each row of the buffer
     auto buffSize = currBuffer.size();
     size_t buffAddr = 0;
@@ -860,37 +862,27 @@ termableLinux::renderBuffer(
     for(int yy = 0; yy < buffSize.y; yy++) 
     {
         xLag = 0;
-        bool drewChar = false;
         for(int xx = 0; xx < buffSize.x; xx++) {
             const auto& oldCh = oldBuffer.buffer()[buffAddr];
             const auto& newCh = currBuffer.buffer()[buffAddr];
             if(oldCh.val != newCh.val ||
-            //    oldBg != newCh.backgroundColor ||
-            //    oldFg != newCh.foregroundColor) 
                oldCh.backgroundColor != newCh.backgroundColor ||
                oldCh.foregroundColor != newCh.foregroundColor) 
             {
-                drewChar = true;
-                // if(yLag != 0) {
-                //     moveDownLine(yLag);
-                //     yLag = 0;
-                //     //xLag+=xx;
-                // }
-
                 if(xLag != 0) {
                     moveRight(xLag);
                     xLag = 0;
                 }
                 
                 // Check color and change if needed
-                //if(newCh.backgroundColor != oldBg) {
+                if(newCh.backgroundColor != lastBg) {
                     setBackgroundColor(newCh.backgroundColor);
-                    oldBg = newCh.backgroundColor;
-                //}
-                //if(newCh.foregroundColor != oldFg) {
+                    lastBg = newCh.backgroundColor;
+                }
+                if(newCh.foregroundColor != lastFg) {
                     setForegroundColor(newCh.foregroundColor);
-                    oldFg = newCh.foregroundColor;
-                //}
+                    lastFg = newCh.foregroundColor;
+                }
                 newCh.val.write();
             }
             else {
@@ -903,22 +895,11 @@ termableLinux::renderBuffer(
         if(yy < buffSize.y-1) {
             printf("\r\n");
         }
-
-        // if(!drewChar) {
-        //     yLag++;
-        // }
-        //buffAddr++;
     }
 
     if(option == BufferRenderOption::Origin) {
         setCursorPos(currBuffer.size());
     }
-
-    // if(yLag != 0) {
-    //     moveDownLine(yLag);
-    //     yLag = 0;
-    //     xLag=currBuffer.size().x;
-    // }
 
     if(xLag != 0) {
         moveRight(xLag);
