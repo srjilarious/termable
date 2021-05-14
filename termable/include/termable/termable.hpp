@@ -156,10 +156,23 @@ enum class NonAsciiChar
 
 using KeyResult = std::variant<std::monostate, NonAsciiChar, char>;
 
+enum class TermableEvent
+{
+    Killed,
+    Resized,
+};
+
+using TermableEventHandler = std::function<void(TermableEvent)>;
+
 class termable
 {
+protected:
+
 public:
     virtual ~termable() = default;
+
+    std::optional<TermableEventHandler> eventHandler = std::nullopt;
+    virtual void onEvent(TermableEvent);
 
     virtual vec2i displaySize() const = 0;
     
@@ -209,6 +222,12 @@ private:
     bool setInputBuffering(bool enabled);
 
 public:
+    termableLinux();
+    termableLinux(const termableLinux&) = delete;
+    termableLinux(termableLinux&&) = delete;
+    termableLinux& operator=(const termableLinux& other) = delete;
+    termableLinux& operator=(termableLinux&& other) = delete;
+    
     ~termableLinux() override;
 
     vec2i displaySize() const override;

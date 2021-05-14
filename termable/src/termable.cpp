@@ -2,6 +2,8 @@
 
 #include <variant>
 #include <optional>
+#include <vector>
+#include <mutex>
 
 #include <signal.h>
 #include <sys/ioctl.h> //ioctl() and TIOCGWINSZ
@@ -14,6 +16,8 @@ namespace lin
 {
     constexpr const char HideCursor[]       = "\033[?25l";
     constexpr const char ShowCursor[]       = "\033[?25h";
+
+    typedef void sigfunc(int);
 
 namespace color
 {
@@ -441,6 +445,60 @@ termBuffer::filledRect(
     }
 }
 
+
+void 
+termable::onEvent(TermableEvent event)
+{
+    if(eventHandler.has_value()) {
+        eventHandler.value()(event);
+    }
+}
+
+// Anonymous namespace
+namespace
+{
+    std::vector<termableLinux*> _terms;
+    std::mutex _termMut;
+    bool _signalRegister = false;
+
+    void termResizeHandler(int signo) {
+        std::lock_guard<std::mutex> lg(_termMut);
+
+        if(signo == SIGWINCH) {
+            for(auto& t : _terms) {
+                t->onEvent(TermableEvent::Resized);
+            }
+        }
+    }
+}
+
+termableLinux::termableLinux()
+{
+    std::lock_guard<std::mutex> lg(_termMut);
+    if(!_signalRegister) {
+        _signalRegister = true;
+        if(signal(SIGWINCH, termResizeHandler) == SIG_ERR) {
+            throw std::runtime_error("Unable to register terminal resize handler!"); 
+        }
+    }
+
+    _terms.push_back(this);
+}
+
+termableLinux::~termableLinux()
+{
+    if(!mBufferingEnabled) {
+        setInputBuffering(true);
+    }
+
+    std::lock_guard<std::mutex> lg(_termMut);
+    auto it = std::find(std::begin(_terms), std::end(_terms), this);
+    if(it != std::end(_terms)) {
+        _terms.erase(it);
+    }
+}
+
+
 vec2i 
 termableLinux::displaySize() const
 {
@@ -451,13 +509,6 @@ termableLinux::displaySize() const
     sx.x = size.ws_col;
     sx.y = size.ws_row;
     return sx;
-}
-
-termableLinux::~termableLinux()
-{
-    if(!mBufferingEnabled) {
-        setInputBuffering(true);
-    }
 }
 
 void

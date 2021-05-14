@@ -17,6 +17,13 @@ int main(int argc, char** argv)
     buffer1.fill({' '}, termable::color::basic::BoldWhite, termable::color::basic::Black);
     buffer2.fill({'.'}, termable::color::basic::BoldWhite, termable::color::basic::Black);
 
+    term.eventHandler = [&] (termable::TermableEvent e) {
+        if(e == termable::TermableEvent::Resized) {
+            sz = term.displaySize();
+            buffer1.resize(sz);
+            buffer2.resize(sz);
+        }
+    };
     termable::termBuffer *currBuffer = &buffer1;
     termable::termBuffer *oldBuffer = &buffer2;
     termable::vec2i pos = {sz.x/2,sz.y/2};
