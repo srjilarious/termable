@@ -43,6 +43,10 @@ struct vec2i {
     int x, y;
 };
 
+struct rect {
+    int top, left, width, height;
+};
+
 using termColor = std::variant<color::basic, uint8_t>;
 // using utf8Char = std::array<uint8_t, 4>;
 
@@ -71,6 +75,12 @@ struct utf8Char
 
 struct termChar
 {
+    termChar() = default;
+    termChar(const termChar& other);
+    termChar(const char u8Ch[]);
+    termChar(std::initializer_list<int>u8Ch);
+    termChar(char c);
+    termChar(utf8Char& c, termColor& fg, termColor& bg);
     // UTF-8 can be 1-4 bytes.
     utf8Char val;
     termColor foregroundColor, backgroundColor;
@@ -95,6 +105,15 @@ public:
                 termColor fore = color::basic::Reset, 
                 termColor back = color::basic::Reset);
 
+    // Writes out a UTF-8 codepoint into the buffer checking for out of bounds.
+    void writeCheckedChar(vec2i pos, 
+                utf8Char c, 
+                termColor fore = color::basic::Reset, 
+                termColor back = color::basic::Reset);
+    
+    // Writes out a UTF-8 codepoint into the buffer checking for out of bounds.
+    void writeCheckedChar(vec2i pos, termChar tc);
+
     // Writes out a UTF-8 string into the buffer, returning the 
     // number of codepoints written out.
     int writeStr(vec2i pos, 
@@ -113,6 +132,9 @@ public:
                 termColor fore = color::basic::Reset, 
                 termColor back = color::basic::Reset);
 
+    void horzLine(termChar c, vec2i start, int len);
+    void vertLine(termChar c, vec2i start, int len);
+    
     void horzLine(utf8Char c, vec2i start, int len,
             termColor fore = color::basic::Reset, 
             termColor back = color::basic::Reset);

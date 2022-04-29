@@ -53,6 +53,16 @@ public:
     void render(termBuffer& buffer);
 };
 
+
+struct BorderStyle
+{
+    termChar topLeft, top, topRight;
+    termChar left, right;
+    termChar bottomLeft, bottom, bottomRight;
+};
+
+void drawBorder(termBuffer& buff, rect r, BorderStyle style);
+
 }
 
 }

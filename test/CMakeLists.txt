@@ -53,6 +53,7 @@ target_link_libraries(
     termable
     termable_ui
 )
+
 add_executable(
     kb_test
     kb_test.cpp
@@ -61,4 +62,14 @@ add_executable(
 target_link_libraries(
     kb_test
     termable
+)
+            
+add_executable(
+    border_test
+    border_test.cpp
+)
+target_link_libraries(
+    border_test
+    termable
+    termable_ui
 )

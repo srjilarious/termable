@@ -25,23 +25,35 @@ namespace color
 
 namespace foreground
 {
-    constexpr const char BlackColor[]     = "\033[30m";
-    constexpr const char RedColor[]     = "\033[31m";
-    constexpr const char GreenColor[]   = "\033[32m";
-    constexpr const char YellowColor[]  = "\033[33m";
-    constexpr const char BlueColor[]    = "\033[34m";
-    constexpr const char MagentaColor[] = "\033[35m";
-    constexpr const char CyanColor[]    = "\033[36m";
-    constexpr const char WhiteColor[]   = "\033[37m";
+    constexpr const char BlackColor[]       = "\033[0;30m";
+    constexpr const char RedColor[]         = "\033[0;31m";
+    constexpr const char GreenColor[]       = "\033[0;32m";
+    constexpr const char YellowColor[]      = "\033[0;33m";
+    constexpr const char BlueColor[]        = "\033[0;34m";
+    constexpr const char MagentaColor[]     = "\033[0;35m";
+    constexpr const char CyanColor[]        = "\033[0;36m";
+    constexpr const char WhiteColor[]       = "\033[0;37m";
 
-    constexpr const char GrayColor[]       = "\033[90m";
-    constexpr const char BoldRedColor[]    = "\033[91m";
-    constexpr const char BoldGreenColor[]  = "\033[92m";
-    constexpr const char BoldYellowColor[] = "\033[93m";
-    constexpr const char BoldBlueColor[]   = "\033[94m";
-    constexpr const char BoldMagentaColor[]= "\033[95m";
-    constexpr const char BoldCyanColor[]   = "\033[96m";
-    constexpr const char BoldWhiteColor[]  = "\033[97m";
+    constexpr const char DimBlackColor[]    = "\033[2;30m";
+    constexpr const char DimRedColor[]      = "\033[2;31m";
+    constexpr const char DimGreenColor[]    = "\033[2;32m";
+    constexpr const char DimYellowColor[]   = "\033[2;33m";
+    constexpr const char DimBlueColor[]     = "\033[2;34m";
+    constexpr const char DimMagentaColor[]  = "\033[2;35m";
+    constexpr const char DimCyanColor[]     = "\033[2;36m";
+    constexpr const char DimWhiteColor[]    = "\033[2;37m";
+
+    constexpr const char ItalicColorMode[]  = "\033[3m";
+    constexpr const char UnderlineColorMode[]  = "\033[4m";
+
+    constexpr const char GrayColor[]        = "\033[1;90m";
+    constexpr const char BoldRedColor[]     = "\033[1;91m";
+    constexpr const char BoldGreenColor[]   = "\033[1;92m";
+    constexpr const char BoldYellowColor[]  = "\033[1;93m";
+    constexpr const char BoldBlueColor[]    = "\033[1;94m";
+    constexpr const char BoldMagentaColor[] = "\033[1;95m";
+    constexpr const char BoldCyanColor[]    = "\033[1;96m";
+    constexpr const char BoldWhiteColor[]   = "\033[1;97m";
 
     std::string color256(uint8_t which) {
         return std::string("\u001b[38;5;") + std::to_string(which) + "m";
@@ -239,13 +251,13 @@ termBuffer::resize(vec2i size)
         }
 
         for(int xx = 0; xx < (size.x - mSize.x); xx++) {
-            mBuffer[bufferIdx++] = {};
+            mBuffer[bufferIdx++] = termChar();
         }
     }
 
     for(int yy = 0; yy < (size.y - mSize.y); yy++) {
         for(int xx = 0; xx < mSize.x; xx++) {
-            mBuffer[bufferIdx++] = {};
+            mBuffer[bufferIdx++] = termChar();
         }
     }
 }
@@ -269,7 +281,29 @@ termBuffer::writeChar(
         termColor fore, 
         termColor back)
 {
-    mBuffer[pos.y*mSize.x+pos.x] = {c, fore, back};
+    mBuffer[pos.y*mSize.x+pos.x] = termChar(c, fore, back);
+}
+
+void 
+termBuffer::writeCheckedChar(
+        vec2i pos, 
+        utf8Char c, 
+        termColor fore, 
+        termColor back)
+{
+    if(pos.x < 0 || pos.x > mSize.x) return;
+    if(pos.y < 0 || pos.y > mSize.y) return;
+    mBuffer[pos.y*mSize.x+pos.x] = termChar(c, fore, back);
+}
+
+void 
+termBuffer::writeCheckedChar(
+        vec2i pos, 
+        termChar tc)
+{
+    if(pos.x < 0 || pos.x > mSize.x) return;
+    if(pos.y < 0 || pos.y > mSize.y) return;
+    mBuffer[pos.y*mSize.x+pos.x] = tc;
 }
 
 int
@@ -285,7 +319,7 @@ termBuffer::writeStr(
     while(*ch != '\0') {
         auto uch = utf8Char(ch);
         if(uch.numBytes > 0) {
-            mBuffer[bufferOffset] = {uch, fore, back};
+            mBuffer[bufferOffset] = termChar(uch, fore, back);
             ch+= uch.numBytes;
             bufferOffset++;
             written++;
@@ -315,7 +349,7 @@ termBuffer::writeCheckedStr(
     while(*ch != '\0') {
         auto uch = utf8Char(ch);
         if(uch.numBytes > 0) {
-            mBuffer[bufferOffset] = {uch, fore, back};
+            mBuffer[bufferOffset] = termChar(uch, fore, back);
             ch+= uch.numBytes;
             bufferOffset++;
             written++;
@@ -348,6 +382,18 @@ termBuffer::fill(
 
 void 
 termBuffer::horzLine(
+        termChar tc, 
+        vec2i start, 
+        int len)
+{
+    horzLine(tc.val,
+        start, len,
+        tc.foregroundColor,
+        tc.backgroundColor);
+}
+
+void 
+termBuffer::horzLine(
         utf8Char c, 
         vec2i start, 
         int len,
@@ -373,11 +419,22 @@ termBuffer::horzLine(
     }
 
     std::size_t pos = start.y*mSize.x + start.x;
-    termChar tc = {c, fore, back};
+    termChar tc = termChar(c, fore, back);
     for(std::size_t ii = 0; ii < len; ii++) {
         mBuffer[pos] = tc;
         pos++;
     }
+}
+
+void 
+termBuffer::vertLine(
+        termChar tc, 
+        vec2i start, 
+        int len)
+{
+    vertLine(tc.val,
+    start, len,
+    tc.foregroundColor, tc.backgroundColor);
 }
 
 void 
@@ -407,7 +464,7 @@ termBuffer::vertLine(
     }
 
     std::size_t pos = start.y*mSize.x + start.x;
-    termChar tc = {c, fore, back};
+    termChar tc = termChar(c, fore, back);
     for(std::size_t ii = 0; ii < len; ii++) {
         mBuffer[pos] = tc;
         pos+= mSize.x;
@@ -433,7 +490,7 @@ termBuffer::filledRect(
     std::size_t pos = start.y*mSize.x + start.x;
     std::size_t lineLen = end.x-start.x;
     std::size_t numLines = end.y-start.y;
-    termChar tc = {c, fore, back};
+    termChar tc = termChar(c, fore, back);
     for(std::size_t yy = 0; yy < numLines; yy++)
     {
         for(std::size_t xx = 0; xx < lineLen; xx++) {
@@ -452,6 +509,42 @@ termable::onEvent(TermableEvent event)
     if(eventHandler.has_value()) {
         eventHandler.value()(event);
     }
+}
+
+
+termChar::termChar(const termChar& other)
+    : val(other.val),
+      foregroundColor(other.foregroundColor), 
+      backgroundColor(other.backgroundColor)
+{
+}
+
+termChar::termChar(const char u8Ch[])
+    : val(u8Ch), 
+      foregroundColor(color::basic::Reset), 
+      backgroundColor(color::basic::Reset)
+{
+}
+
+termChar::termChar(std::initializer_list<int>u8Ch)
+    : val(u8Ch), 
+      foregroundColor(color::basic::Reset), 
+      backgroundColor(color::basic::Reset)
+{
+}
+
+termChar::termChar(char c)
+    : val(c), 
+      foregroundColor(color::basic::Reset), 
+      backgroundColor(color::basic::Reset)
+{
+}
+
+termChar::termChar(utf8Char& c, termColor& fg, termColor& bg)
+    : val(c), 
+      foregroundColor(fg), 
+      backgroundColor(bg)
+{
 }
 
 // Anonymous namespace

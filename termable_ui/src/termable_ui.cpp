@@ -157,5 +157,25 @@ FullMenuView::render(termBuffer& buffer)
     }
 }
 
+
+void 
+drawBorder(
+    termBuffer& buff, 
+    rect r, 
+    BorderStyle style)
+{
+    buff.writeCheckedChar({r.left, r.top}, style.topLeft);
+    buff.writeCheckedChar({r.left+r.width, r.top}, style.topRight);
+
+    buff.horzLine(style.top, {r.left+1, r.top}, r.width-1);
+
+    buff.vertLine(style.left, {r.left, r.top+1}, r.height-1);
+    buff.vertLine(style.right, {r.left+r.width, r.top+1}, r.height-1);
+
+    buff.writeCheckedChar({r.left, r.top+r.height}, style.bottomLeft);
+    buff.writeCheckedChar({r.left+r.width, r.top+r.height}, style.bottomRight);
+    buff.horzLine(style.bottom, {r.left+1, r.top+r.height}, r.width-1);
+}
+
 }
 }
