@@ -44,7 +44,7 @@ struct vec2i {
 };
 
 struct rect {
-    int top, left, width, height;
+    int left, top, width, height;
 };
 
 using termColor = std::variant<color::basic, uint8_t>;

@@ -31,7 +31,19 @@ int main(int argc, char** argv)
     style.bottom       = '=';
     style.bottomRight  = '/';
     
-    termable::ui::drawBorder(*currBuffer, {5, 2, 30, 10}, style);
+    termable::ui::drawBorder(*currBuffer, {2, 2, 20, 10}, style);
+    
+    termable::ui::BorderStyle style2;
+    style2.topLeft   = u8"\u250F";
+    style2.top       = u8"\u2501";
+    style2.topRight  = u8"\u2513";
+    style2.left = u8"\u2503";
+    style2.right = u8"\u2503";
+    style2.bottomLeft   = u8"\u2517";
+    style2.bottom       = u8"\u2501";
+    style2.bottomRight  = u8"\u251b";
+    
+    termable::ui::drawBorder(*currBuffer, {24, 2, 30, 15}, style2);
 
     term.renderBuffer(*currBuffer, *oldBuffer, termable::BufferRenderOption::Rerender);
     

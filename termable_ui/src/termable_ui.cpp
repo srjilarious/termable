@@ -165,16 +165,16 @@ drawBorder(
     BorderStyle style)
 {
     buff.writeCheckedChar({r.left, r.top}, style.topLeft);
-    buff.writeCheckedChar({r.left+r.width, r.top}, style.topRight);
+    buff.writeCheckedChar({r.left+r.width-1, r.top}, style.topRight);
 
-    buff.horzLine(style.top, {r.left+1, r.top}, r.width-1);
+    buff.horzLine(style.top, {r.left+1, r.top}, r.width-2);
 
-    buff.vertLine(style.left, {r.left, r.top+1}, r.height-1);
-    buff.vertLine(style.right, {r.left+r.width, r.top+1}, r.height-1);
+    buff.vertLine(style.left, {r.left, r.top+1}, r.height-2);
+    buff.vertLine(style.right, {r.left+r.width-1, r.top+1}, r.height-2);
 
-    buff.writeCheckedChar({r.left, r.top+r.height}, style.bottomLeft);
-    buff.writeCheckedChar({r.left+r.width, r.top+r.height}, style.bottomRight);
-    buff.horzLine(style.bottom, {r.left+1, r.top+r.height}, r.width-1);
+    buff.writeCheckedChar({r.left, r.top+r.height-1}, style.bottomLeft);
+    buff.writeCheckedChar({r.left+r.width-1, r.top+r.height-1}, style.bottomRight);
+    buff.horzLine(style.bottom, {r.left+1, r.top+r.height-1}, r.width-2);
 }
 
 }
