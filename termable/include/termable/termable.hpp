@@ -128,6 +128,12 @@ public:
                 termColor fore = color::basic::Reset, 
                 termColor back = color::basic::Reset);
 
+    int writeCheckedStr(vec2i pos, 
+                std::string str, 
+                std::size_t maxLen,
+                termColor fore = color::basic::Reset, 
+                termColor back = color::basic::Reset);
+
     void fill(utf8Char c,
                 termColor fore = color::basic::Reset, 
                 termColor back = color::basic::Reset);

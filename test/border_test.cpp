@@ -47,6 +47,20 @@ int main(int argc, char** argv)
 
     term.renderBuffer(*currBuffer, *oldBuffer, termable::BufferRenderOption::Rerender);
     
+    while(true) {
+        termable::KeyResult c = term.getch();
+        if(std::holds_alternative<std::monostate>(c))
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        }
+        else if(std::holds_alternative<char>(c)) {
+            auto ch = std::get<char>(c);
+            if(ch == 'q' || ch == '\033') {
+                break;
+            }
+        }
+    }
+
     // term.doneRendering(*currBuffer, termable::BufferRenderOption::Origin);
     term.showCursor(true);
     return 0;

@@ -336,7 +336,45 @@ termBuffer::writeStr(
 int
 termBuffer::writeCheckedStr(
         vec2i pos, 
-        std::string str, 
+        std::string str,
+        termColor fore, 
+        termColor back)
+{
+    // TODO: Should do clipping instead
+    if(pos.x < 0 || pos.x > mSize.x) return 0;
+    if(pos.y < 0 || pos.y > mSize.y) return 0;
+
+    int written = 0;
+    const char* ch = str.data();
+    auto bufferOffset = pos.y*mSize.x+pos.x;
+    while(*ch != '\0') {
+        auto uch = utf8Char(ch);
+        if(uch.numBytes > 0) {
+            mBuffer[bufferOffset] = termChar(uch, fore, back);
+            ch+= uch.numBytes;
+            bufferOffset++;
+            written++;
+        }
+        else {
+            // Hit invalid codepoint, so exit.
+            return written;
+        }
+
+        if(pos.x + written >= mSize.x-1) {
+            // We reached the end of the buffer.
+            break;
+        }
+    }
+
+    return written;
+}
+
+
+int
+termBuffer::writeCheckedStr(
+        vec2i pos, 
+        std::string str,
+        std::size_t maxLen,
         termColor fore, 
         termColor back)
 {
@@ -353,6 +391,9 @@ termBuffer::writeCheckedStr(
             ch+= uch.numBytes;
             bufferOffset++;
             written++;
+            if(written >= maxLen) { 
+                return written;
+            }
         }
         else {
             // Hit invalid codepoint, so exit.
