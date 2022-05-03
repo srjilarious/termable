@@ -177,25 +177,5 @@ drawBorder(
     buff.horzLine(style.bottom, {r.left+1, r.top+r.height-1}, r.width-2);
 }
 
-// namespace
-// {
-
-// class DummyTableView : public TableView<int>
-// {
-// protected:
-    
-
-//     std::tuple<termColor, termColor> headerColor(std::size_t colNo) { return {color::basic::Reset, color::basic::Reset}; }
-//     std::string headerValue(std::size_t colNo) { return ""; }
-
-//     std::tuple<termColor, termColor> cellColor(std::size_t rowNo, std::size_t colNo) { return {color::basic::Reset, color::basic::Reset}; }
-//     std::string cellValue(int& item, std::size_t colNo) { return ""; }
-
-//     std::size_t numColumns() const override { return 0; }
-//     std::size_t colSize(std::size_t colNo) const override { return 0; }
-// };
-
-// } // anonymous namespace
-
 }
 }

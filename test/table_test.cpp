@@ -13,22 +13,19 @@ struct Item
     std::string name, type;
 };
 
-class MyTable : public termable::ui::TableView
+class MyTable : public termable::ui::TableView<Item>
 {
 public:
     MyTable() = default;
     virtual ~MyTable() = default;
-
-    std::vector<Item> items;
 
 protected:
     std::tuple<termable::termColor, termable::termColor> headerColor(std::size_t colNo) override;
     std::string headerValue(std::size_t colNo) override;
 
     std::tuple<termable::termColor, termable::termColor> cellColor(std::size_t rowNo, std::size_t colNo) override;
-    std::string cellValue(std::size_t rowNo, std::size_t colNo) override;
+    std::string cellValue(Item& item, std::size_t colNo) override;
 
-    virtual std::size_t numRows() const override { return items.size(); }
     std::size_t numColumns() const override { return 3; }
     std::size_t colSize(std::size_t colNo) const override;
 };
@@ -36,7 +33,7 @@ protected:
 std::tuple<termable::termColor, termable::termColor> 
 MyTable::headerColor(std::size_t colNo)
 {
-    return {termable::color::basic::Blue, termable::color::basic::BoldYellow};
+    return {termable::color::basic::BoldYellow, termable::termColor((uint8_t)26)};
 }
 
 std::string 
@@ -61,17 +58,18 @@ std::tuple<termable::termColor, termable::termColor>
 MyTable::cellColor(std::size_t rowNo, std::size_t colNo) 
 {
     if((rowNo % 2) == 0) {
-        return {termable::color::basic::BoldWhite, termable::color::basic::Blue};
+        auto bg = termable::termColor((uint8_t)235);
+        return {termable::color::basic::BoldWhite, bg};
     }
     else {
-        return {termable::color::basic::BoldWhite, termable::color::basic::Green};
+        auto bg = termable::termColor{(uint8_t)238};
+        return {termable::color::basic::BoldWhite, bg};
     }
 }
 
 std::string 
-MyTable::cellValue(std::size_t rowNo, std::size_t colNo)
+MyTable::cellValue(Item& item, std::size_t colNo)
 {
-    auto& item = items[rowNo];
     switch(colNo) {
         case 0:
             return std::to_string(item.id);
@@ -120,13 +118,14 @@ int main(int argc, char** argv)
     termable::termBuffer *currBuffer = &buffer1;
     termable::termBuffer *oldBuffer = &buffer2;
         
-    MyTable table;
-    table.items.push_back({0, "downloads/", "DIR"});
-    table.items.push_back({1, "audio/", "DIR"});
-    table.items.push_back({2, "my_doc.txt", "Text"});
-    table.items.push_back({3, "super_script.sh", "Script"});
+    std::vector<Item> items;
+    items.push_back({0, "downloads/", "DIR"});
+    items.push_back({1, "audio/", "DIR"});
+    items.push_back({2, "my_doc.txt", "Text"});
+    items.push_back({3, "super_script.sh", "Script"});
 
-    table.drawTable(*currBuffer);
+    MyTable table;
+    table.drawTable(*currBuffer, items);
 
     term.renderBuffer(*currBuffer, *oldBuffer, termable::BufferRenderOption::Rerender);
     

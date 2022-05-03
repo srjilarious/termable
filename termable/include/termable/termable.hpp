@@ -18,6 +18,7 @@ namespace color
     enum class basic : uint16_t
     {
         Reset,
+
         Black,
         Red,
         Green,

@@ -63,86 +63,35 @@ struct BorderStyle
 
 void drawBorder(termBuffer& buff, rect r, BorderStyle style);
 
-// template<typename T>
-// class TableView
-// {
-// protected:
-
-//     virtual std::tuple<termColor, termColor> headerColor(std::size_t colNo) { return {color::basic::Reset, color::basic::Reset}; }
-//     virtual std::string headerValue(std::size_t colNo) {return ""; }
-
-//     virtual std::tuple<termColor, termColor> cellColor(std::size_t rowNo, std::size_t colNo) { return {color::basic::Reset, color::basic::Reset}; }
-//     virtual std::string cellValue(T& item, std::size_t colNo) { return ""; }
-
-//     virtual std::size_t numColumns() const { return 0; }
-//     virtual std::size_t colSize(std::size_t colNo) const { return 0; }
-
-//     void drawRow(termBuffer& buff, T& item, std::size_t rowNo)
-//     {
-//         int xPos = 0;
-//         for(std::size_t ii = 0; ii < numColumns(); ++ii) {
-//             const auto [bg, fg] = cellColor(rowNo, ii);
-//             std::size_t colSz = colSize(ii);
-//             int numWritten = buff.writeCheckedStr(
-//                     {xPos, rowNo}, 
-//                     cellValue(item, ii),
-//                     colSz, 
-//                     bg, fg);
-//             // Fill the rest of the column
-//             if(numWritten < colSz) {
-//                 buff.writeCheckedStr(
-//                     {xPos+numWritten, rowNo}, 
-//                     std::string(colSz - numWritten, ' '),
-//                     bg, fg);
-//             }
-//             xPos += colSz;
-//         }
-//     }
-
-// public:
-//     TableView() = default;
-//     virtual ~TableView() = default;
-
-//     void drawTable(termBuffer& buff, std::vector<T> items)
-//     {
-//         std::size_t rowNo = 0;
-//         for(auto& item : items) {
-//             drawRow(buff, item, rowNo);
-//             rowNo++;
-//         }
-//     }
-
-// };
-
+template<typename T>
 class TableView
 {
 protected:
 
     virtual std::tuple<termColor, termColor> headerColor(std::size_t colNo) { return {color::basic::Reset, color::basic::Reset}; }
-    virtual std::string headerValue(std::size_t colNo) = 0;
+    virtual std::string headerValue(std::size_t colNo) {return ""; }
 
     virtual std::tuple<termColor, termColor> cellColor(std::size_t rowNo, std::size_t colNo) { return {color::basic::Reset, color::basic::Reset}; }
-    virtual std::string cellValue(std::size_t rowNo, std::size_t colNo) = 0;
+    virtual std::string cellValue(T& item, std::size_t colNo) { return ""; }
 
-    virtual std::size_t numRows() const = 0;
-    virtual std::size_t numColumns() const = 0;
-    virtual std::size_t colSize(std::size_t colNo) const = 0;
+    virtual std::size_t numColumns() const { return 0; }
+    virtual std::size_t colSize(std::size_t colNo) const { return 0; }
 
-    void drawRow(termBuffer& buff, std::size_t rowNo)
+    void drawRow(termBuffer& buff, T& item, std::size_t rowNo, vec2i drawOffset = {0, 0})
     {
         int xPos = 0;
         for(std::size_t ii = 0; ii < numColumns(); ++ii) {
             const auto [fg, bg] = cellColor(rowNo, ii);
             std::size_t colSz = colSize(ii);
             int numWritten = buff.writeCheckedStr(
-                    {xPos, rowNo+1}, 
-                    cellValue(rowNo, ii),
+                    {xPos+drawOffset.x, rowNo+drawOffset.y}, 
+                    cellValue(item, ii),
                     colSz, 
                     fg, bg);
             // Fill the rest of the column
             if(numWritten < colSz) {
                 buff.writeCheckedStr(
-                    {xPos+numWritten, rowNo+1}, 
+                    {xPos+numWritten+drawOffset.x, rowNo+drawOffset.y}, 
                     std::string(colSz - numWritten, ' '),
                     fg, bg);
             }
@@ -154,7 +103,7 @@ public:
     TableView() = default;
     virtual ~TableView() = default;
 
-    void drawTable(termBuffer& buff)
+    void drawTable(termBuffer& buff, std::vector<T> items)
     {
         int xPos = 0;
         for(std::size_t ii = 0; ii < numColumns(); ++ii) {
@@ -175,13 +124,83 @@ public:
             xPos += colSz;
         }
 
-        for(std::size_t rowNo = 0; rowNo < numRows(); rowNo++) 
-        {
-            drawRow(buff, rowNo);
+        std::size_t rowNo = 0;
+        for(auto& item : items) {
+            drawRow(buff, item, rowNo, {0, 1});
+            rowNo++;
         }
     }
 
 };
+
+// class TableView
+// {
+// protected:
+
+//     virtual std::tuple<termColor, termColor> headerColor(std::size_t colNo) { return {color::basic::Reset, color::basic::Reset}; }
+//     virtual std::string headerValue(std::size_t colNo) = 0;
+
+//     virtual std::tuple<termColor, termColor> cellColor(std::size_t rowNo, std::size_t colNo) { return {color::basic::Reset, color::basic::Reset}; }
+//     virtual std::string cellValue(std::size_t rowNo, std::size_t colNo) = 0;
+
+//     virtual std::size_t numRows() const = 0;
+//     virtual std::size_t numColumns() const = 0;
+//     virtual std::size_t colSize(std::size_t colNo) const = 0;
+
+//     void drawRow(termBuffer& buff, std::size_t rowNo)
+//     {
+//         int xPos = 0;
+//         for(std::size_t ii = 0; ii < numColumns(); ++ii) {
+//             const auto [fg, bg] = cellColor(rowNo, ii);
+//             std::size_t colSz = colSize(ii);
+//             int numWritten = buff.writeCheckedStr(
+//                     {xPos, rowNo+1}, 
+//                     cellValue(rowNo, ii),
+//                     colSz, 
+//                     fg, bg);
+//             // Fill the rest of the column
+//             if(numWritten < colSz) {
+//                 buff.writeCheckedStr(
+//                     {xPos+numWritten, rowNo+1}, 
+//                     std::string(colSz - numWritten, ' '),
+//                     fg, bg);
+//             }
+//             xPos += colSz;
+//         }
+//     }
+
+// public:
+//     TableView() = default;
+//     virtual ~TableView() = default;
+
+//     void drawTable(termBuffer& buff)
+//     {
+//         int xPos = 0;
+//         for(std::size_t ii = 0; ii < numColumns(); ++ii) {
+//             const auto [fg, bg] = headerColor(ii);
+//             std::size_t colSz = colSize(ii);
+//             int numWritten = buff.writeCheckedStr(
+//                     {xPos, 0}, 
+//                     headerValue(ii),
+//                     colSz, 
+//                     fg, bg);
+//             // Fill the rest of the column
+//             if(numWritten < colSz) {
+//                 buff.writeCheckedStr(
+//                     {xPos+numWritten, 0}, 
+//                     std::string(colSz - numWritten, ' '),
+//                     fg, bg);
+//             }
+//             xPos += colSz;
+//         }
+
+//         for(std::size_t rowNo = 0; rowNo < numRows(); rowNo++) 
+//         {
+//             drawRow(buff, rowNo);
+//         }
+//     }
+
+// };
 
 }
 
