@@ -33,7 +33,18 @@ protected:
 std::tuple<termable::termColor, termable::termColor> 
 MyTable::headerColor(std::size_t colNo)
 {
-    return {termable::color::basic::BoldYellow, termable::termColor((uint8_t)26)};
+    if(colNo == 1) {
+        return {
+            termable::termColor(termable::color::basic::BoldYellow, termable::TermStyle::Underline), 
+            termable::termColor((uint8_t)26)
+        };
+    }
+    else {
+        return {
+            termable::termColor(termable::color::basic::BoldYellow, termable::TermStyle::Bright), 
+            termable::termColor((uint8_t)26)
+        };
+    }
 }
 
 std::string 
@@ -57,13 +68,26 @@ MyTable::headerValue(std::size_t colNo)
 std::tuple<termable::termColor, termable::termColor> 
 MyTable::cellColor(std::size_t rowNo, std::size_t colNo) 
 {
-    if((rowNo % 2) == 0) {
-        auto bg = termable::termColor((uint8_t)235);
-        return {termable::color::basic::BoldWhite, bg};
+    // Highlight the second column
+    if(colNo == 2) {
+        if((rowNo % 2) == 0) {
+            auto bg = termable::termColor((uint8_t)17);
+            return {termable::color::basic::BoldWhite, bg};
+        }
+        else {
+            auto bg = termable::termColor{(uint8_t)18};
+            return {termable::color::basic::BoldWhite, bg};
+        }
     }
     else {
-        auto bg = termable::termColor{(uint8_t)238};
-        return {termable::color::basic::BoldWhite, bg};
+        if((rowNo % 2) == 0) {
+            auto bg = termable::termColor((uint8_t)235);
+            return {termable::color::basic::BoldWhite, bg};
+        }
+        else {
+            auto bg = termable::termColor{(uint8_t)238};
+            return {termable::color::basic::BoldWhite, bg};
+        }
     }
 }
 
@@ -112,8 +136,8 @@ int main(int argc, char** argv)
     auto sz = term.displaySize();
 
     termable::termBuffer buffer1(sz), buffer2(sz);
-    buffer1.fill({' '}, termable::color::basic::White, termable::color::basic::Black);
-    buffer2.fill({'.'}, termable::color::basic::White, termable::color::basic::Black);
+    buffer1.fill({' '}, termable::color::basic::White, termable::color::basic::Reset);
+    buffer2.fill({'.'}, termable::color::basic::White, termable::color::basic::Reset);
 
     termable::termBuffer *currBuffer = &buffer1;
     termable::termBuffer *oldBuffer = &buffer2;

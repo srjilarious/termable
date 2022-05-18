@@ -23,6 +23,7 @@ namespace color
 {
     constexpr const char ResetColor[]   = "\033[0m";
 
+    constexpr const char BrightColorMode[]  = "\033[1m";
     constexpr const char DimColorMode[]  = "\033[2m";
     constexpr const char ItalicColorMode[]  = "\033[3m";
     constexpr const char UnderlineColorMode[]  = "\033[4m";
@@ -581,6 +582,42 @@ termChar::termChar(utf8Char& c, termColor& fg, termColor& bg)
 {
 }
 
+termColor::termColor()
+    : color(color::basic::Reset),
+      style(TermStyle::Normal)
+{
+}
+termColor::termColor(const termColor& other)
+    : color(other.color),
+      style(other.style)
+{
+}
+
+termColor::termColor(color::basic col, TermStyle st)
+    : color(col),
+      style(st)
+{
+}
+
+termColor::termColor(int col_256, TermStyle st)
+    : color(static_cast<uint8_t>(col_256)),
+      style(st)
+{
+}
+
+bool 
+termColor::operator==(const termColor &tc) const
+{
+    return color == tc.color &&
+        style == style;
+}
+
+bool 
+termColor::operator!=(const termColor &tc) const
+{
+    return !(*this == tc);
+}
+
 // Anonymous namespace
 namespace
 {
@@ -695,8 +732,8 @@ termableLinux::clearLine(ClearType type)
 
 void termableLinux::setBackgroundColor(termColor color)
 {
-    if(std::holds_alternative<color::basic>(color)) {
-        color::basic basicBg = std::get<color::basic>(color);
+    if(std::holds_alternative<color::basic>(color.color)) {
+        color::basic basicBg = std::get<color::basic>(color.color);
         switch (basicBg)
         {
             case color::basic::Reset:
@@ -750,14 +787,32 @@ void termableLinux::setBackgroundColor(termColor color)
         }
     }
     else {
-        printf("%s", lin::color::background::color256(std::get<uint8_t>(color)).c_str());
+        printf("%s", lin::color::background::color256(std::get<uint8_t>(color.color)).c_str());
     }
 }
 
 void termableLinux::setForegroundColor(termColor color)
 {
-    if(std::holds_alternative<color::basic>(color)) {
-        color::basic basicFg = std::get<color::basic>(color);
+    // TODO: Change style to being per char
+    switch(color.style) {
+        case TermStyle::Normal:
+            printf(lin::color::ResetColor);
+            break;
+        case TermStyle::Dim:
+            printf(lin::color::DimColorMode);
+            break;
+        case TermStyle::Bright:
+            printf(lin::color::BrightColorMode);
+            break;
+        case TermStyle::Italic:
+            printf(lin::color::ItalicColorMode);
+            break;
+        case TermStyle::Underline:
+            printf(lin::color::UnderlineColorMode);
+            break;
+    }
+    if(std::holds_alternative<color::basic>(color.color)) {
+        color::basic basicFg = std::get<color::basic>(color.color);
         switch (basicFg)
         {
             case color::basic::Reset:
@@ -811,7 +866,7 @@ void termableLinux::setForegroundColor(termColor color)
         }
     }
     else {
-        printf("%s", lin::color::foreground::color256(std::get<uint8_t>(color)).c_str());
+        printf("%s", lin::color::foreground::color256(std::get<uint8_t>(color.color)).c_str());
     }
 }
 

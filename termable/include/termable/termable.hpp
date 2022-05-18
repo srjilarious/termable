@@ -37,7 +37,17 @@ namespace color
         BoldCyan,
         BoldWhite
     };
+
 }
+
+// TODO: Change to flags
+enum class TermStyle {
+    Normal,
+    Dim,
+    Bright,
+    Italic,
+    Underline
+};
 
 
 struct vec2i {
@@ -48,7 +58,19 @@ struct rect {
     int left, top, width, height;
 };
 
-using termColor = std::variant<color::basic, uint8_t>;
+struct termColor {
+    termColor();
+    termColor(const termColor& other);
+    termColor(color::basic col, TermStyle st = TermStyle::Normal);
+    termColor(int col_256, TermStyle st = TermStyle::Normal);
+    
+    bool operator==(const termColor &tc) const;
+    bool operator!=(const termColor &tc) const;
+
+    std::variant<color::basic, uint8_t> color;
+    TermStyle style;
+};
+
 // using utf8Char = std::array<uint8_t, 4>;
 
 struct utf8Char
