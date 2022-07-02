@@ -1019,8 +1019,8 @@ termableLinux::renderBuffer(const termBuffer& buffer, BufferRenderOption option)
             const auto& tChar = buffer.buffer()[yy*buffSize.x+xx];
 
             // Check color and change if needed
-            setBackgroundColor(tChar.backgroundColor);
             setForegroundColor(tChar.foregroundColor);
+            setBackgroundColor(tChar.backgroundColor);
 
             // Write out character
             tChar.val.write();
@@ -1048,8 +1048,8 @@ termableLinux::doneRendering(
         moveUpLine(buffer.size().y-1);
     }
 
-    setBackgroundColor(color::basic::Reset);
     setForegroundColor(color::basic::Reset);
+    setBackgroundColor(color::basic::Reset);
     for(int yy = 0; yy < buffer.size().y; yy++) 
     {
         for(int xx = 0; xx < buffer.size().x; xx++) 
@@ -1108,13 +1108,13 @@ termableLinux::renderBuffer(
                 }
                 
                 // Check color and change if needed
-                if(newCh.backgroundColor != lastBg) {
-                    setBackgroundColor(newCh.backgroundColor);
-                    lastBg = newCh.backgroundColor;
-                }
-                if(newCh.foregroundColor != lastFg) {
+                if(newCh.foregroundColor != lastFg/*oldCh.foregroundColor*/) {
                     setForegroundColor(newCh.foregroundColor);
                     lastFg = newCh.foregroundColor;
+                }
+                if(newCh.backgroundColor != lastBg/*oldCh.backgroundColor*/) {
+                    setBackgroundColor(newCh.backgroundColor);
+                    lastBg = newCh.backgroundColor;
                 }
                 newCh.val.write();
             }

@@ -69,7 +69,7 @@ std::tuple<termable::termColor, termable::termColor>
 MyTable::cellColor(std::size_t rowNo, std::size_t colNo) 
 {
     // Highlight the second column
-    if(colNo == 2) {
+    if(colNo == 1) {
         if((rowNo % 2) == 0) {
             auto bg = termable::termColor((uint8_t)17);
             return {termable::color::basic::BoldWhite, bg};
